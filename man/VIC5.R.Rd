@@ -39,10 +39,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Ruida Zhong \email{zrd2017@163.com}
+\strong{Maintainer}: Dongdong Kong \email{kongdd.sysu@gmail.com} (\href{https://orcid.org/0000-0003-1836-8172}{ORCID})
 
 Authors:
 \itemize{
+  \item Ruida Zhong \email{zrd2017@163.com} [contributor]
   \item Xiaohong Chen \email{eescxh@mail.sysu.edu.cn} [contributor]
   \item Zhaoli Wang \email{wangzhl@scut.edu.cn} [contributor]
   \item Chengguang Lai \email{laichg@scut.edu.cn} [contributor]

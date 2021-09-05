@@ -601,8 +601,8 @@ veg_lib_struct* make_veglib(NumericMatrix veglib)
         if (temp[i].displacement[j] > maxd) {
           maxd = temp[i].displacement[j];
         }
-        // change into LAI >= 0.01
-        if (temp[i].LAI[j] > 0 && temp[i].displacement[j] <= 0) {
+        // LAI threshold changed from 0 into 0.01, 2021-09-05
+        if (temp[i].LAI[j] > 0.01 && temp[i].displacement[j] <= 0) {
           log_err("Vegetation has leaves (LAI = %f), but no "
                     "displacement (%f)",
                     temp[i].LAI[j], temp[i].displacement[j]);

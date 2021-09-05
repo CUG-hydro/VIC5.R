@@ -283,7 +283,7 @@
 #' print(outputs)
 #'
 #' # Example of parallelization
-#' \donttest{
+#' \dontrun{
 #' library(doParallel)
 #' registerDoParallel(cores=4)
 #' outputs <- vic(forcing, soil, veg, snowband = band, parall = TRUE)

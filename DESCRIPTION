@@ -2,7 +2,10 @@ Package: VIC5.R
 Type: Package
 Title: The Variable Infiltration Capacity (VIC) Model
 Version: 0.1.2
-Authors@R: c(person("Ruida", "Zhong", email = "zrd2017@163.com", role = c("aut", "cre")),
+Authors@R: c(
+    person("Dongdong", "Kong", role = c("aut", "cre"), 
+        email = "kongdd.sysu@gmail.com", comment = c(ORCID = "0000-0003-1836-8172")),
+    person("Ruida", "Zhong", email = "zrd2017@163.com", role = c("aut", "ctb")),
     person("Xiaohong", "Chen", email = "eescxh@mail.sysu.edu.cn", role = c("aut", "ctb")),
     person("Zhaoli", "Wang", email = "wangzhl@scut.edu.cn", role = c("aut", "ctb")),
     person("Chengguang", "Lai", email = "laichg@scut.edu.cn", role = c("aut", "ctb")),
@@ -47,9 +50,11 @@ Imports:
     Rcpp,
     foreach
 Suggests:
+    testthat (>= 3.0.0),
     doParallel
 LinkingTo: 
     RcppArmadillo,
     Rcpp
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3

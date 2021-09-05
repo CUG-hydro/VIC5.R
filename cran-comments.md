@@ -1,39 +1,9 @@
-# VICmodel 0.1.1
+# VIC5 0.2.1
 
-* Fix some codes with bug or potential problem of the VIC source codes and try to fix the issue described in https://raw.githubusercontent.com/kalibera/cran-checks/master/rchk/results/VICmodel.out, including:
-  
-Comment out functions like backtrace/backtrace_symbols.
+- This package is the new generation of `VICmodel`, which is withdrawed from cran
+  due to warnings in Linux system. This time, we solved those warnings.
 
-Macro definition `ERROR` is renamed as `VIC_ERROR`.
+- Routing function was removed from this package, as this package is mainly
+  aimed to interface with the VIC hydrological model in C language.
 
-Comment out the macros that are not used in this package such as those of openmp.
-
-Comment out the unnecessary print functions.
-
-* Fix the data error of the `STEHE` sample data for routing model.
-
-* Add the observed streamflow data to `STEHE` sample data.
-
-## Test environments
-* Mac OS X 10.13.3 (on travis-ci), R 3.5.0
-* ubuntu 14.04.5 LTS (on travis-ci), R 3.5.0
-* win-builder (devel and release)
-
-## R CMD check results
-
-There was 1 NOTE for ubuntu environment:
-
-* This is a new release.
-
-There was 1 NOTE for Mac OS X environment:
-
-* This is a new release.
-
-There was 1 NOTE for win-builder environment:
-
-* This is a new release.
-
-  
-## Reverse dependencies
-
-This is a new release, so there are no reverse dependencies.
+- add the function `vic_params`, which makes VIC global parameter setting much easier.

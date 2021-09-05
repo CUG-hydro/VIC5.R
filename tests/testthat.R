@@ -1,4 +1,4 @@
 library(testthat)
-library(VIC5.R)
+library(VIC5)
 
-test_check("VIC5.R")
+test_check("VIC5")

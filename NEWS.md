@@ -1,13 +1,9 @@
-# VICmodel 0.1.2
+# VIC5 0.2.1
 
-* Add some function to calculate Nash-Sutcliffe coefficient of efficiency (NSE) and relative bias (RB) to evaluate the streamflow simulation performance.
+- This package is the next generation of `VICmodel`, which is withdrawed from cran
+  due to warnings in Linux system. This time, we solved those warnings.
 
-* Longwave radiation and atmospheric pressure are not necessary forcing input now.
+- Routing function was removed from this package, as this package is mainly
+  aimed to interface with the VIC hydrological model in C language.
 
-# VICmodel 0.1.1
-
-* Fix some codes with bug or potential problem of the VIC source codes.
-
-* Fix the data error of the `STEHE` sample data.
-
-* Add the observed streamflow data to `STEHE` sample data for routing model.
+- add the function `vic_params`, which makes VIC global parameter setting much easier.

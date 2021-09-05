@@ -11,3 +11,5 @@ LICENSE
 ^data-raw$
 ^\.github$
 ^scripts$
+^examples$
+^R/dev$

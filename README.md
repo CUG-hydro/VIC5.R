@@ -1,42 +1,32 @@
-# VIC5.R
+# VIC5
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/rpkgs/VIC5.R/workflows/R-CMD-check/badge.svg)](https://github.com/rpkgs/VIC5.R/actions)
-[![codecov](https://codecov.io/gh/rpkgs/VIC5.R/branch/master/graph/badge.svg)](https://codecov.io/gh/rpkgs/VIC5.R)
-[![CRAN](http://www.r-pkg.org/badges/version/VIC5.R)](https://cran.r-project.org/package=VIC5.R)
+[![R-CMD-check](https://github.com/rpkgs/VIC5/workflows/R-CMD-check/badge.svg)](https://github.com/rpkgs/VIC5/actions)
+[![codecov](https://codecov.io/gh/rpkgs/VIC5/branch/master/graph/badge.svg)](https://codecov.io/gh/rpkgs/VIC5)
+[![CRAN](http://www.r-pkg.org/badges/version/VIC5)](https://cran.r-project.org/package=VIC5)
 <!-- badges: end -->
 
 ## Overview
 
-VIC5.R is an R implementation of the Variable Infiltration Capacity (VIC) macroscale distributed hydrologic model (Liang et al., 1994) originally developed by Xu Liang at the University of Washington ([UW](http://www.washington.edu/)), USA, and currently the model is maintained by the Computational Hydrology group ([UW Hydro](http://uw-hydro.github.io/)) in the [Department of Civil and Environmental Engineering](https://www.ce.washington.edu/) at UW. This R package is developed by Ruida Zhong et al. at the Center for Water Resources and Environment, [Sun Yat-sen University](http://www.sysu.edu.cn/) (SYSU). This package is built based on the VIC source code V5.0.1 (Hamman et al., 2018), aim to for the more convinient use for the R users and other users or researchers using windows platform.
+VIC5 is an R implementation of the Variable Infiltration Capacity (VIC) macroscale distributed hydrologic model (Liang et al., 1994) originally developed by Xu Liang at the University of Washington ([UW](http://www.washington.edu/)), USA, and currently the model is maintained by the Computational Hydrology group ([UW Hydro](http://uw-hydro.github.io/)) in the [Department of Civil and Environmental Engineering](https://www.ce.washington.edu/) at UW. This R package is developed by Ruida Zhong, Dongdong Kong, et al. at the Center for Water Resources and Environment, [Sun Yat-sen University](http://www.sysu.edu.cn/) (SYSU). This package is built based on the VIC source code V5.0.1 (Hamman et al., 2018), aim to for the more convinient use for the R users and other users or researchers using windows platform.
 
 The VIC model can simulate several land surface processes physically based on both water balance and energy balance, e.g. Evapotranspiration (on vegetation canopy, vegetation transpiration and soil evaporation), runoff (surface and underground), changes of soil moisture, soil ice and soil temperature of each soil layer, accumulation and melt of snow, sensible and latent heat flux between atmosphere and land surface, streamflow of the basin outlet (needed to be coupled with a runoff routing model), and many other variables. The landsurface parameters (about vegetation, soil, topography) and the timeseries of meteorological data (meteorological forcing, including precipitation, air temperature, incomming shortwave and longwave radiation, wind speed, air pressure and vapor pressure) are necessary inputs to run the VIC model.
 
 For more information about VIC please see the [official documentation website of VIC](http://vic.readthedocs.io/en/master/).
 
-## Dependencies
-
-**R** >= 3.0.0
- 
-**R-packages:**
-
-- Rcpp >= 0.12.0
-- foreach
-
 ## Installation
 
-You can install VIC5.R from github with:
+You can install VIC5 from github with:
 
 ``` r
-# Via devtools
-require(devtools)
-devtools::install_github("Sibada/VIC5.R")
+# Via github
+remotes::install_github("rpkgs/VIC5")
 ```
 
 Or get it from the CRAN repository:
 
 ```r
-install.packages("VIC5.R")
+install.packages("VIC5")
 ```
 
 ## References
@@ -50,6 +40,7 @@ install.packages("VIC5.R")
 This is an example to run the VIC model using the sample inputs:
 
 ``` r
+library(VIC5)
 #Sample data, with 16 gridcells and 10 day hourly meteorological forcing inputs
 data(STEHE)
 

@@ -42,5 +42,5 @@
 }
 
 .onUnload <- function(libpath) {
-    library.dynam.unload("VIC5.R", libpath)
+    library.dynam.unload("VIC5", libpath)
 }

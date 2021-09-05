@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 // aux_Lohmann_conv
 NumericVector aux_Lohmann_conv(NumericMatrix tmpm);
-RcppExport SEXP _VIC5_R_aux_Lohmann_conv(SEXP tmpmSEXP) {
+RcppExport SEXP _VIC5_aux_Lohmann_conv(SEXP tmpmSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -24,7 +24,7 @@ END_RCPP
 }
 // vic_run_cell
 List vic_run_cell(List vic_options, NumericMatrix forcing, NumericVector soil_par, NumericVector snowband, NumericMatrix veg_par, NumericVector lake_par, NumericMatrix forcing_veg, NumericMatrix veglib, List output_info);
-RcppExport SEXP _VIC5_R_vic_run_cell(SEXP vic_optionsSEXP, SEXP forcingSEXP, SEXP soil_parSEXP, SEXP snowbandSEXP, SEXP veg_parSEXP, SEXP lake_parSEXP, SEXP forcing_vegSEXP, SEXP veglibSEXP, SEXP output_infoSEXP) {
+RcppExport SEXP _VIC5_vic_run_cell(SEXP vic_optionsSEXP, SEXP forcingSEXP, SEXP soil_parSEXP, SEXP snowbandSEXP, SEXP veg_parSEXP, SEXP lake_parSEXP, SEXP forcing_vegSEXP, SEXP veglibSEXP, SEXP output_infoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -43,7 +43,7 @@ END_RCPP
 }
 // vic_run_cells_all
 List vic_run_cells_all(List vic_options, arma::cube forcing_3d, NumericMatrix soil_par_mat, List veg_par_list, NumericMatrix forcing_veg, NumericVector snowband, NumericVector lake_par, NumericMatrix veglib, List output_info, int ncores);
-RcppExport SEXP _VIC5_R_vic_run_cells_all(SEXP vic_optionsSEXP, SEXP forcing_3dSEXP, SEXP soil_par_matSEXP, SEXP veg_par_listSEXP, SEXP forcing_vegSEXP, SEXP snowbandSEXP, SEXP lake_parSEXP, SEXP veglibSEXP, SEXP output_infoSEXP, SEXP ncoresSEXP) {
+RcppExport SEXP _VIC5_vic_run_cells_all(SEXP vic_optionsSEXP, SEXP forcing_3dSEXP, SEXP soil_par_matSEXP, SEXP veg_par_listSEXP, SEXP forcing_vegSEXP, SEXP snowbandSEXP, SEXP lake_parSEXP, SEXP veglibSEXP, SEXP output_infoSEXP, SEXP ncoresSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -63,7 +63,7 @@ END_RCPP
 }
 // vic_version
 void vic_version();
-RcppExport SEXP _VIC5_R_vic_version() {
+RcppExport SEXP _VIC5_vic_version() {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     vic_version();
@@ -72,14 +72,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_VIC5_R_aux_Lohmann_conv", (DL_FUNC) &_VIC5_R_aux_Lohmann_conv, 1},
-    {"_VIC5_R_vic_run_cell", (DL_FUNC) &_VIC5_R_vic_run_cell, 9},
-    {"_VIC5_R_vic_run_cells_all", (DL_FUNC) &_VIC5_R_vic_run_cells_all, 10},
-    {"_VIC5_R_vic_version", (DL_FUNC) &_VIC5_R_vic_version, 0},
+    {"_VIC5_aux_Lohmann_conv", (DL_FUNC) &_VIC5_aux_Lohmann_conv, 1},
+    {"_VIC5_vic_run_cell", (DL_FUNC) &_VIC5_vic_run_cell, 9},
+    {"_VIC5_vic_run_cells_all", (DL_FUNC) &_VIC5_vic_run_cells_all, 10},
+    {"_VIC5_vic_version", (DL_FUNC) &_VIC5_vic_version, 0},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_VIC5_R(DllInfo *dll) {
+RcppExport void R_init_VIC5(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

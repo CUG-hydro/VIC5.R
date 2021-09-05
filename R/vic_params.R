@@ -1,7 +1,6 @@
-
-#' Set VIC model global parameters.
+#' @param options List object, see details
 #' 
-#' @keywords internal
+#' @rdname vic_param
 #' @importFrom lubridate year month day
 #' @export
 vic_params <- function(options) {

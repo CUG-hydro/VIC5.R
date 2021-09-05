@@ -1,6 +1,6 @@
-#' @title VIC5.R: The Variable Infiltration Capacity (VIC) Model version 5 in R
-#' @name VIC5.R
-#' @useDynLib VIC5.R, .registration = TRUE
+#' @title VIC5: The Variable Infiltration Capacity (VIC) Model version 5 in R
+#' @name VIC5
+#' @useDynLib VIC5, .registration = TRUE
 #' @docType package
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats setNames convolve median

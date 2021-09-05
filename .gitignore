@@ -6,3 +6,14 @@ src/*.o
 src/*.so
 src/*.dll
 src/.idea
+
+*/temp/
+data-raw/
+examples/
+scripts/
+R/dev/
+
+*.rda
+*.txt
+*.pdf
+*.nc

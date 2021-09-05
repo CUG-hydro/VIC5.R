@@ -5,3 +5,9 @@
 ^\.travis\.yml$
 LICENSE
 ^cran-comments\.md$
+^VIC_debug\.R$
+^Makefile$
+^\.vscode$
+^data-raw$
+^\.github$
+^scripts$

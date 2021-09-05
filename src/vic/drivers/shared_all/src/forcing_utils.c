@@ -137,7 +137,7 @@ count_force_vars(FILE *gp)
     start_position = ftell(gp);
 
     // read the first line
-    fgets(cmdstr, MAXSTRING, gp);
+    (void)fgets(cmdstr, MAXSTRING, gp);
 
     // initalize nvars
     nvars = 0;
@@ -158,7 +158,7 @@ count_force_vars(FILE *gp)
                 break;
             }
         }
-        fgets(cmdstr, MAXSTRING, gp);
+        (void)fgets(cmdstr, MAXSTRING, gp);
     }
 
     // put the position in the file back to where we started

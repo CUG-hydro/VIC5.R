@@ -2,11 +2,15 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 aux_Lohmann_conv <- function(tmpm) {
-    .Call('_VICmodel_aux_Lohmann_conv', PACKAGE = 'VICmodel', tmpm)
+    .Call(`_VIC5_R_aux_Lohmann_conv`, tmpm)
 }
 
 vic_run_cell <- function(vic_options, forcing, soil_par, snowband, veg_par, lake_par, forcing_veg, veglib, output_info) {
-    .Call('_VICmodel_vic_run_cell', PACKAGE = 'VICmodel', vic_options, forcing, soil_par, snowband, veg_par, lake_par, forcing_veg, veglib, output_info)
+    .Call(`_VIC5_R_vic_run_cell`, vic_options, forcing, soil_par, snowband, veg_par, lake_par, forcing_veg, veglib, output_info)
+}
+
+vic_run_cells_all <- function(vic_options, forcing_3d, soil_par_mat, veg_par_list, forcing_veg, snowband, lake_par, veglib, output_info, ncores = 2L) {
+    .Call(`_VIC5_R_vic_run_cells_all`, vic_options, forcing_3d, soil_par_mat, veg_par_list, forcing_veg, snowband, lake_par, veglib, output_info, ncores)
 }
 
 #' Display version of VIC model and this package.
@@ -14,6 +18,6 @@ vic_run_cell <- function(vic_options, forcing, soil_par, snowband, veg_par, lake
 #'
 #' @export
 vic_version <- function() {
-    invisible(.Call('_VICmodel_vic_version', PACKAGE = 'VICmodel'))
+    invisible(.Call(`_VIC5_R_vic_version`))
 }
 

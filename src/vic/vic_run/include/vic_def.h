@@ -38,9 +38,17 @@
 #ifndef VIC_DEF_H
 #define VIC_DEF_H
 
+#ifndef _BSD_SOURCE
 #define _BSD_SOURCE
+#endif
+
+#ifndef __USE_XOPEN
 #define __USE_XOPEN
+#endif
+
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 
 #include <float.h>
 #include <math.h>

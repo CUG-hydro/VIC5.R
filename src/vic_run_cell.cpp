@@ -26,8 +26,8 @@ List vic_run_cell(List vic_options, NumericMatrix forcing,
   soil_con_struct    soil_con;
   dmy_struct         *dmy;
 
-  stream_struct     *streams = NULL;
-  double          ***out_data;
+  stream_struct      *streams = NULL;
+  double             ***out_data;
   save_data_struct   save_data;
 
   List               output_tables;
@@ -117,7 +117,7 @@ List vic_run_cell(List vic_options, NumericMatrix forcing,
     put_data(&all_vars, &force, &soil_con, veg_con, veg_lib,
              &lake_con, out_data[0], &save_data, &cell_timer);
 
-      for (size_t sn = 0; sn < options.Noutstreams; sn++) {
+    for (size_t sn = 0; sn < options.Noutstreams; sn++) {
       agg_stream_data(&(streams[sn]), &(dmy[rec]), out_data);
     }
     write_data(&streams, &dmy[rec], output_tables, write_row);

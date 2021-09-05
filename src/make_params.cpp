@@ -167,6 +167,7 @@ void make_soilparam(NumericVector soil_par, soil_con_struct *temp,
   ****************************************************************/
   for (layer = 0; layer < options.Nlayer; layer++) {
     temp->Wcr[layer] = Wcr_FRACT[layer] * temp->max_moist[layer];
+    // Wcr: 饱和含水量 mmm
     temp->Wpwp[layer] = Wpwp_FRACT[layer] * temp->max_moist[layer];
     if (temp->Wpwp[layer] > temp->Wcr[layer]) {
       log_err("Calculated wilting point moisture (%f mm) is "
@@ -600,6 +601,7 @@ veg_lib_struct* make_veglib(NumericMatrix veglib)
         if (temp[i].displacement[j] > maxd) {
           maxd = temp[i].displacement[j];
         }
+        // change into LAI >= 0.01
         if (temp[i].LAI[j] > 0 && temp[i].displacement[j] <= 0) {
           log_err("Vegetation has leaves (LAI = %f), but no "
                     "displacement (%f)",

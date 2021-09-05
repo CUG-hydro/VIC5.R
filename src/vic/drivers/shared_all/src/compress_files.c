@@ -46,5 +46,5 @@ compress_files(char      string[],
         log_err("Invalid compression level for gzip, must be an integer 1-9");
     }
 
-    system(command);
+    int status = system(command);
 }

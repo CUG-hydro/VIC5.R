@@ -55,6 +55,7 @@ open_file(char string[],
     char  zipname[MAXSTRING],
           command[MAXSTRING],
           jnkstr[MAXSTRING];
+    char* status;
     int   temp, headcnt, i;
 
     stream = fopen(string, type);
@@ -86,7 +87,7 @@ open_file(char string[],
         if (temp == 35) {
             headcnt = 0;
             while (temp == 35) {
-                fgets(jnkstr, MAXSTRING, stream);
+                status = fgets(jnkstr, MAXSTRING, stream);
                 temp = fgetc(stream);
                 while (temp == 32) {
                     temp = fgetc(stream);
@@ -95,15 +96,13 @@ open_file(char string[],
             }
             rewind(stream);
             for (i = 0; i < headcnt; i++) {
-                fgets(jnkstr, MAXSTRING, stream);
+                status = fgets(jnkstr, MAXSTRING, stream);
             }
         }
         else {
             rewind(stream);
         }
     }
-
     //fflush(stderr);
-
     return stream;
 }

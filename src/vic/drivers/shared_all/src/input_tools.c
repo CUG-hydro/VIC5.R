@@ -64,6 +64,7 @@ count_nstreams_nvars(FILE   *gp,
     unsigned long start_position;
     char          cmdstr[MAXSTRING];
     char          optstr[MAXSTRING];
+    char*         status;
     size_t        i;
 
     // Figure out where we are in the input file
@@ -74,7 +75,7 @@ count_nstreams_nvars(FILE   *gp,
     rewind(gp);
 
     // read the first line
-    fgets(cmdstr, MAXSTRING, gp);
+    status = fgets(cmdstr, MAXSTRING, gp);
 
     // initialize nstreams and nvars
     *nstreams = 0;
@@ -98,7 +99,7 @@ count_nstreams_nvars(FILE   *gp,
                 nvars[*nstreams - 1]++;
             }
         }
-        fgets(cmdstr, MAXSTRING, gp);
+        status = fgets(cmdstr, MAXSTRING, gp);
     }
 
     if (*nstreams > MAX_OUTPUT_STREAMS) {

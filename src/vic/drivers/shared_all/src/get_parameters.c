@@ -34,13 +34,14 @@ get_parameters(FILE *paramfile)
 {
     char                     cmdstr[MAXSTRING];
     char                     optstr[MAXSTRING];
+    char*                    status;
 
     extern parameters_struct param;
 
     /** Read through parameter file to find parameters **/
 
     rewind(paramfile);
-    fgets(cmdstr, MAXSTRING, paramfile);
+    status = fgets(cmdstr, MAXSTRING, paramfile);
 
     while (!feof(paramfile)) {
         if (cmdstr[0] != '#' && cmdstr[0] != '\n' && cmdstr[0] != '\0') {
@@ -48,7 +49,7 @@ get_parameters(FILE *paramfile)
 
             /* Handle case of comment line in which '#' is indented */
             if (optstr[0] == '#') {
-                fgets(cmdstr, MAXSTRING, paramfile);
+                status = fgets(cmdstr, MAXSTRING, paramfile);
                 continue;
             }
 
@@ -537,7 +538,7 @@ get_parameters(FILE *paramfile)
                          "- check your spelling", optstr);
             }
         }
-        fgets(cmdstr, MAXSTRING, paramfile);
+        status = fgets(cmdstr, MAXSTRING, paramfile);
     }
 }
 

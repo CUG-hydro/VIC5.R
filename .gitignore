@@ -17,3 +17,6 @@ R/dev/
 *.txt
 *.pdf
 *.nc
+
+src-i386/
+src-x64/

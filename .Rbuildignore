@@ -13,3 +13,7 @@ LICENSE
 ^scripts$
 ^examples$
 ^R/dev$
+^src/temp$
+[.]o$
+[.]dll$
+[.]so$

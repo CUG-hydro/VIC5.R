@@ -17,6 +17,9 @@ vic_param(par, val = NULL)
 \item{val}{Value of the parameter to be set. Will return the current setting
 value when not provided.}
 }
+\value{
+No return value. Set global options for VIC model.
+}
 \description{
 Get or set global parameters of the VIC model.
 }

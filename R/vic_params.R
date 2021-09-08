@@ -366,8 +366,10 @@ vic_params <- function(options) {
 #'   cell size if the lake model is running.}
 #' }
 #'
+#' @return No return value. Set global options for VIC model.
+#' 
 #' @references
-#'
+#' 
 #' Bras, R. F., 1990: Hydrology, an introduction to hydrologic science,
 #' Addison-Wesley. 
 #'

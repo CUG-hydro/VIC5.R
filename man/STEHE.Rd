@@ -39,8 +39,6 @@ evaluate the streamflow simulation results.}
 \source{
 \url{https://github.com/UW-Hydro/VIC_sample_data}
 
-\url{http://www.hydro.washington.edu/Lettenmaier/Models/VIC/SourceCode/Download.shtml}
-
 \url{http://uw-hydro.github.io/}
 }
 \usage{

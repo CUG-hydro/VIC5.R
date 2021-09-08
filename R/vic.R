@@ -222,17 +222,17 @@
 #' Hamman, J. J., Nijssen, B., Bohn, T. J., Gergel, D. R., and Mao, Y. (2018),
 #' The Variable Infiltration Capacity model version 5 (VIC-5): infrastructure
 #' improvements for new applications and reproducibility, Geosci. Model Dev., 11,
-#' 3481-3496, <doi:10.5194/gmd-11-3481-2018>.
+#' 3481-3496, \doi{10.5194/gmd-11-3481-2018}.
 #'
 #' Konzelmann, T, Van de Wal, R.S.W., Greuell, W., Bintanja, R., Henneken, E.A.C.,
 #' Abe-Ouchi, A., 1996. Parameterization of global and longwave incoming radiation
 #' for the Greenland Ice Sheet. Global Planet. Change, 9:143-164,
-#' <doi:10.1016/0921-8181(94)90013-2>.
+#' \doi{10.1016/0921-8181(94)90013-2}.
 #'
 #' Liang, X., Lettenmaier, D. P., Wood, E. F., and Burges, S. J. (1994), A
 #' simple hydrologically based model of land surface water and energy
 #' fluxes for general circulation models, J. Geophys. Res., 99(D7),
-#' 14415-14428, <doi:10.1029/94JD00483>.
+#' 14415-14428, \doi{10.1029/94JD00483}.
 #'
 #' Liang, X., and Xie, Z., 2001: A new surface runoff parameterization
 #' with subgrid-scale soil heterogeneity for land surface models,

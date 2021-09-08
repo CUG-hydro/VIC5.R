@@ -36,7 +36,16 @@
 #' @source
 #' <https://github.com/UW-Hydro/VIC_sample_data>
 #'
-#' <http://www.hydro.washington.edu/Lettenmaier/Models/VIC/SourceCode/Download.shtml>
-#'
 #' <http://uw-hydro.github.io/>
 "STEHE"
+
+#' IGBP vegetation library for VIC model
+#' 
+#' This library is originated from Python package `hydrate`.
+#' 
+#' @references 
+#' 1. https://github.com/KMarkert/hydrate/blob/master/hydrate/lookups/veg_params.py
+#' 2. https://github.com/KMarkert/hydrate
+#' 
+#' @docType data
+"veglib_IGBP"

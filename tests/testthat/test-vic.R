@@ -1,10 +1,12 @@
 test_that("vic works", {
   #Sample data, with 16 gridcells and 10 day hourly meteorological forcing inputs
+  skip_on_os("solaris")
+  
   data(STEHE)
   forcing <- STEHE$forcing
   soil <- STEHE$soil
   veg <- STEHE$veg
-
+  
   # vic_param("start_year", 1949)
   # vic_param("start_month", 1)
   # vic_param("start_day", 1)

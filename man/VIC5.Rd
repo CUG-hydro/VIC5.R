@@ -15,17 +15,12 @@ The Variable Infiltration Capacity (VIC) model is a macroscale
     of the VIC model at present is led by the UW Hydro (Computational Hydrology
     group) in the Department of Civil and Environmental Engineering at UW. VIC is
     a research model and in its various forms it has been applied to most of the
-    major river basins around the world, as well as globally. If you make use of
-    this model, please acknowledge the appropriate references listed in the help
-    page of this package or on the references page
-    <http://vic.readthedocs.io/en/master/Documentation/References/>
-    of the VIC official documentation website.
-    These should include Liang et al. (1994) plus any references relevant to the
-    features you are using Reference: "Liang, X., D. P. Lettenmaier, E. F. Wood, and
+    major river basins around the world, as well as globally 
+    <http://vic.readthedocs.io/en/master/Documentation/References/>. 
+    References: "Liang, X., D. P. Lettenmaier, E. F. Wood, and
     S. J. Burges (1994), A simple hydrologically based model of land surface water
     and energy fluxes for general circulation models, J. Geophys. Res., 99(D7),
-    14415-14428, <doi:10.1029/94JD00483>". Hamman et al. (2018) about VIC 5.0.1 also can
-    be considered:
+    14415-14428, <doi:10.1029/94JD00483>"; 
     "Hamman, J. J., Nijssen, B., Bohn, T. J., Gergel, D. R., and Mao, Y. (2018), The
     Variable Infiltration Capacity model version 5 (VIC-5): infrastructure improvements
     for new applications and reproducibility, Geosci. Model Dev., 11, 3481-3496, 

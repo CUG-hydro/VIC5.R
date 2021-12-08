@@ -320,8 +320,7 @@ improvements for new applications and reproducibility, Geosci. Model Dev., 11,
 
 Konzelmann, T, Van de Wal, R.S.W., Greuell, W., Bintanja, R., Henneken, E.A.C.,
 Abe-Ouchi, A., 1996. Parameterization of global and longwave incoming radiation
-for the Greenland Ice Sheet. Global Planet. Change, 9:143-164,
-\doi{10.1016/0921-8181(94)90013-2}.
+for the Greenland Ice Sheet. Global Planet. Change, 9:143-164.
 
 Liang, X., Lettenmaier, D. P., Wood, E. F., and Burges, S. J. (1994), A
 simple hydrologically based model of land surface water and energy

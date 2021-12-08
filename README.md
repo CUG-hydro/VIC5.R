@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/rpkgs/VIC5/workflows/R-CMD-check/badge.svg)](https://github.com/rpkgs/VIC5/actions)
-[![codecov](https://codecov.io/gh/rpkgs/VIC5/branch/master/graph/badge.svg)](https://codecov.io/gh/rpkgs/VIC5)
+[![codecov](https://app.codecov.io/gh/rpkgs/VIC5/branch/master/graph/badge.svg)](https://app.codecov.io/gh/rpkgs/VIC5)
 [![CRAN](http://www.r-pkg.org/badges/version/VIC5)](https://cran.r-project.org/package=VIC5)
 <!-- badges: end -->
 

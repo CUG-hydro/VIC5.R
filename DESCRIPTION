@@ -1,7 +1,7 @@
 Package: VIC5
 Type: Package
 Title: The Variable Infiltration Capacity (VIC) Hydrological Model
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(
     person("Ruida", "Zhong", email = "zrd2017@163.com", role = c("aut", "ctb")),
     person("Dongdong", "Kong", role = c("aut", "cre"), 

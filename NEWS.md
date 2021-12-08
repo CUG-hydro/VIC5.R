@@ -1,3 +1,7 @@
+# VIC5 0.2.4
+
+- add `XAJ` Hydrology model
+
 # VIC5 0.2.1
 
 - This package is the next generation of `VICmodel`, which is withdrawed from cran

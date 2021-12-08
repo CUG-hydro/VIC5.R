@@ -11,6 +11,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// XAJrun
+List XAJrun(NumericVector PREC, NumericVector EVAP, NumericVector parameters, NumericVector UH, double Area, double dt);
+RcppExport SEXP _VIC5_XAJrun(SEXP PRECSEXP, SEXP EVAPSEXP, SEXP parametersSEXP, SEXP UHSEXP, SEXP AreaSEXP, SEXP dtSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type PREC(PRECSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type EVAP(EVAPSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type parameters(parametersSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type UH(UHSEXP);
+    Rcpp::traits::input_parameter< double >::type Area(AreaSEXP);
+    Rcpp::traits::input_parameter< double >::type dt(dtSEXP);
+    rcpp_result_gen = Rcpp::wrap(XAJrun(PREC, EVAP, parameters, UH, Area, dt));
+    return rcpp_result_gen;
+END_RCPP
+}
 // aux_Lohmann_conv
 NumericVector aux_Lohmann_conv(NumericMatrix tmpm);
 RcppExport SEXP _VIC5_aux_Lohmann_conv(SEXP tmpmSEXP) {
@@ -72,6 +88,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_VIC5_XAJrun", (DL_FUNC) &_VIC5_XAJrun, 6},
     {"_VIC5_aux_Lohmann_conv", (DL_FUNC) &_VIC5_aux_Lohmann_conv, 1},
     {"_VIC5_vic_run_cell", (DL_FUNC) &_VIC5_vic_run_cell, 9},
     {"_VIC5_vic_run_cells_all", (DL_FUNC) &_VIC5_vic_run_cells_all, 10},

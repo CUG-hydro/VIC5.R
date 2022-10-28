@@ -272,15 +272,13 @@ soil <- STEHE$soil
 veg <- STEHE$veg
 
 # Set the global options for a 7-days run.
-vic_param('start_year', 1949)
-vic_param('start_month', 1)
-vic_param('start_day', 1)
-vic_param('end_year', 1949)
-vic_param('end_month', 1)
-vic_param('end_day', 7)
-vic_param('step_per_day', 24)
-vic_param('snow_step_per_day', 24)
-vic_param('runoff_step_per_day', 24)
+vic_params(list(
+  date_start = "1949-01-01",
+  date_end = "1949-01-10",
+  step_per_day = 24,
+  snow_step_per_day = 24,
+  runoff_step_per_day = 24
+))
 
 # Run VIC.
 outputs <- vic(forcing, soil, veg)
@@ -310,7 +308,6 @@ outputs <- vic(forcing, soil, veg, snowband = band, parall = TRUE)
 stopImplicitCluster()
 print(outputs)
 }
-
 }
 \references{
 Hamman, J. J., Nijssen, B., Bohn, T. J., Gergel, D. R., and Mao, Y. (2018),

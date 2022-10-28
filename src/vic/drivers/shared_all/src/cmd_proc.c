@@ -137,8 +137,7 @@ print_version(char *driver)
 /******************************************************************************
  * @brief    This routine prints out license information
  *****************************************************************************/
-void
-print_license()
+void print_license(void)
 {
     Rprintf(
             "\n  Variable Infiltration Capacity (VIC) macroscale hydrologic\n");

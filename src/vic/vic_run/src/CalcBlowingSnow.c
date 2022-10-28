@@ -279,20 +279,21 @@ CalcBlowingSnow(double   Dt,
  *           in C Section 4.3
  *****************************************************************************/
 double
-qromb(double (*funcd)(),
-      double   es,
-      double   Wind,
-      double   AirDens,
-      double   ZO,
-      double   EactAir,
-      double   F,
-      double   hsalt,
-      double   phi_r,
-      double   ushear,
-      double   Zrh,
-      double   a,
-      double   b)
-{
+qromb(double (*funcd)(
+          double a, double es, double Wind, double AirDens, double ZO,
+          double EactAir, double F, double hsalt, double phi_r, double ushear, double Zrh),
+      double es,
+      double Wind,
+      double AirDens,
+      double ZO,
+      double EactAir,
+      double F,
+      double hsalt,
+      double phi_r,
+      double ushear,
+      double Zrh,
+      double a,
+      double b) {
     extern parameters_struct param;
 
     double                   ss, dss;
@@ -373,21 +374,22 @@ polint(double  xa[],
  * @brief    Compute the nth stage of refinement of an extended trapezoidal rule.
  *****************************************************************************/
 double
-trapzd(double (*funcd)(),
-       double   es,
-       double   Wind,
-       double   AirDens,
-       double   ZO,
-       double   EactAir,
-       double   F,
-       double   hsalt,
-       double   phi_r,
-       double   ushear,
-       double   Zrh,
-       double   a,
-       double   b,
-       int      n)
-{
+trapzd(double (*funcd)(
+           double a, double es, double Wind, double AirDens, double ZO, 
+           double EactAir, double F, double hsalt, double phi_r, double ushear, double Zrh),
+       double es,
+       double Wind,
+       double AirDens,
+       double ZO,
+       double EactAir,
+       double F,
+       double hsalt,
+       double phi_r,
+       double ushear,
+       double Zrh,
+       double a,
+       double b,
+       int n) {
     double x, tnm, sum, del;
     int    it, j;
 

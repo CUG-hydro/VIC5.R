@@ -612,9 +612,9 @@ void count_nstreams_nvars(FILE *gp, size_t *nstreams, size_t nvars[]);
 void cmd_proc(int argc, char **argv, char *globalfilename);
 void compress_files(char string[], short int level);
 stream_struct create_outstream(stream_struct *output_streams);
-double get_cpu_time();
+double get_cpu_time(void);
 void get_current_datetime(char *cdt);
-double get_wall_time();
+double get_wall_time(void);
 double date2num(double origin, dmy_struct *date, double tzoffset,
                 unsigned short int calendar, unsigned short int time_units);
 void dmy_all_30_day(double julian, dmy_struct *dmy);
@@ -715,7 +715,7 @@ void set_alarm(dmy_struct *dmy_current, unsigned int freq, void *value,
 void set_output_defaults(stream_struct **output_streams,
                          dmy_struct     *dmy_current,
                          unsigned short  default_file_format);
-void set_output_met_data_info();
+void set_output_met_data_info(void);
 void setup_stream(stream_struct *stream, size_t nvars, size_t ngridcells);
 void soil_moisture_from_water_table(soil_con_struct *soil_con, size_t nlayers);
 void sprint_dmy(char *str, dmy_struct *dmy);

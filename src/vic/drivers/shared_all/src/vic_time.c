@@ -686,7 +686,7 @@ leap_year(unsigned short int year,
  * @brief   Initialize global time origin
  *****************************************************************************/
 void
-initialize_time()
+initialize_time(void)
 {
     extern global_param_struct global_param;
 

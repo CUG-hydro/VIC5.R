@@ -30,7 +30,7 @@
  * @brief    Initialize parameters structure.
  *****************************************************************************/
 void
-initialize_parameters()
+initialize_parameters(void)
 {
     extern parameters_struct param;
     // Initialize temporary parameters

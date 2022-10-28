@@ -546,7 +546,7 @@ get_parameters(FILE *paramfile)
  * @brief    Validate VIC model parameter values
  *****************************************************************************/
 void
-validate_parameters()
+validate_parameters(void)
 {
     extern parameters_struct param;
 

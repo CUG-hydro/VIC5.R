@@ -32,7 +32,7 @@
  *           model.
  *****************************************************************************/
 void
-initialize_options()
+initialize_options(void)
 {
     extern option_struct options;
 

@@ -30,7 +30,7 @@
  * @brief    Set output met data information
  *****************************************************************************/
 void
-set_output_met_data_info()
+set_output_met_data_info(void)
 {
     size_t                 v;
 

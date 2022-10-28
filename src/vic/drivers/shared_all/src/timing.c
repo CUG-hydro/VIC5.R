@@ -30,7 +30,7 @@
  * @brief    Get wall time
  *****************************************************************************/
 double
-get_wall_time()
+get_wall_time(void)
 {
     struct timeval time;
     if (gettimeofday(&time, NULL)) {
@@ -43,7 +43,7 @@ get_wall_time()
  * @brief    Get CPU time
  *****************************************************************************/
 double
-get_cpu_time()
+get_cpu_time(void)
 {
     return (double) clock() / CLOCKS_PER_SEC;
 }

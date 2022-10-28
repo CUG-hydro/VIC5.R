@@ -32,7 +32,7 @@
  *           model.
  *****************************************************************************/
 void
-initialize_global()
+initialize_global(void)
 {
     extern global_param_struct global_param;
 

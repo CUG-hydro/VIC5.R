@@ -4,6 +4,8 @@
 [![R-CMD-check](https://github.com/rpkgs/VIC5/workflows/R-CMD-check/badge.svg)](https://github.com/rpkgs/VIC5/actions)
 [![codecov](https://codecov.io/gh/rpkgs/VIC5/branch/master/graph/badge.svg)](https://app.codecov.io/gh/rpkgs/VIC5)
 [![CRAN](http://www.r-pkg.org/badges/version/VIC5)](https://cran.r-project.org/package=VIC5)
+[![total](http://cranlogs.r-pkg.org/badges/grand-total/VIC5)](https://www.rpackages.io/package/VIC5)
+[![monthly](http://cranlogs.r-pkg.org/badges/VIC5)](https://www.rpackages.io/package/VIC5)
 <!-- badges: end -->
 
 ## Overview

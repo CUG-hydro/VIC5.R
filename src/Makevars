@@ -6,7 +6,10 @@ HDRS = -I "$(VIC_RUN)/include" -I "$(VIC_DRVSHR)/include" -I "."
 
 LOG_LVL = 25
 
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) 
+# CFLAGS = -Wno-strict-prototypes -Wno-deprecated-non-prototype
+# PKG_CFLAGS = -Wno-strict-prototypes -Wno-deprecated-non-prototype
+
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
 # -Wunused-result
 PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) 
 

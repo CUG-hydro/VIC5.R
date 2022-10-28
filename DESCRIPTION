@@ -1,7 +1,7 @@
 Package: VIC5
 Type: Package
 Title: The Variable Infiltration Capacity (VIC) Hydrological Model
-Version: 0.2.4
+Version: 0.2.5
 Authors@R: c(
     person("Ruida", "Zhong", email = "zrd2017@163.com", role = c("aut", "ctb")),
     person("Dongdong", "Kong", role = c("aut", "cre"), 
@@ -50,6 +50,6 @@ Suggests:
 LinkingTo: 
     RcppArmadillo,
     Rcpp
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE)
 Config/testthat/edition: 3

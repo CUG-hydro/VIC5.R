@@ -1,3 +1,7 @@
+# 0.2.6
+
+- change `sprintf` to `snprintf`
+
 # 0.2.5
 
 - suppress `-Wno-strict-prototypes` and `-Wno-deprecated-non-prototype` warnings

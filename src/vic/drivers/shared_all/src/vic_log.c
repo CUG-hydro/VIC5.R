@@ -77,7 +77,7 @@ get_current_datetime(char *cdt)
         log_err("Something went wrong converting the current time info to ymd");
     }
 
-    snprintf(cdt, 254, "%s-%05d", ymd, seconds_since_midnight);
+    snprintf(cdt, MAXSTRING+6, "%s-%05d", ymd, seconds_since_midnight);
 }
 
 /******************************************************************************

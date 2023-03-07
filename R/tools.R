@@ -12,3 +12,17 @@ listk <- function(...) {
   x <- setNames(list(...), vars)
   return(x)
 }
+
+
+`%||%` <- function(x, y) {
+  if (is.null(x)) {
+    y
+  } else {
+    x
+  }
+}
+
+set_dimnames <- function(x, value) {
+  dimnames(x) <- value
+  x
+}

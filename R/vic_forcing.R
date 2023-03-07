@@ -20,6 +20,11 @@ get_J <- function() {
   J
 }
 
+# air pressure in kPa
+cal_Pa <- function(Tair, elev = 0) {
+  101.3 * exp(-elev * 9.81 / (287 * (273.15 + Tair - 0.5 * elev * 0.0065)))
+}
+
 cal_lw <- function(temp, vp, rsds, lat, J) {
   # Calc s
   lat <- lat * pi/360

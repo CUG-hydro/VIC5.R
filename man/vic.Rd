@@ -302,10 +302,12 @@ print(outputs)
 
 # Example of parallelization
 \dontrun{
-library(doParallel)
-registerDoParallel(cores=4)
+# library(doParallel)
+# registerDoParallel(cores=4)
+Ipaper::InitCluster(4, FORK = FALSE)
+
 outputs <- vic(forcing, soil, veg, snowband = band, parall = TRUE)
-stopImplicitCluster()
+# stopImplicitCluster()
 print(outputs)
 }
 }

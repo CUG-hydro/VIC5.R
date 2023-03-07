@@ -42,6 +42,7 @@ Imports:
     stats,
     utils,
     lubridate,
+    magrittr,
     Rcpp,
     foreach
 Suggests:

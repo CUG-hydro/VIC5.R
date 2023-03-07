@@ -1,4 +1,3 @@
-
 get_J <- function() {
   st <- c(
     getOption('VIC_global_params')[['start_year']],
@@ -46,7 +45,6 @@ cal_lw <- function(temp, vp, rsds, lat, J) {
   e <- 1-s + s*ec
 
   # Calc longwave radiation
-
   e*5.6696e-8* (temp + 273.15) ** 4
 }
 
@@ -125,4 +123,55 @@ deal_output_info <- function(output) {
 
   }
   return(output)
+}
+
+check_forcing <- function(forcing, soil = NULL) {
+  ncell = nrow(soil)
+
+  # Check length of forcing data.
+  minfl <- get_forclen()
+  for (varname in names(forcing)) {
+    fl <- nrow(forcing[[varname]])
+    if (is.null(fl)) fl <- length(forcing[[varname]])
+    if (fl < minfl) {
+      stop(sprintf(
+        'Length of forcing data "%s" (%d) is too short for model require (%d).',
+        varname, fl, minfl
+      ))
+    }
+
+    fc <- ncol(forcing[[varname]])
+    if (is.null(fc) && ncell > 1 || fc < ncell) {
+      stop(sprintf('Columns of forcing data "%s" (%d) are too few for model require. It should no less than number of gridcells (%d).', varname, fc, ncell))
+    }
+  }
+
+  # The order of forc_types must not be change.
+  forc_types <- c("PREC", "TEMP", "SW", "LW", "PRESS", "VP", "WIND")
+  forc_lack <- setdiff(forc_types, names(forcing))
+
+  ngrid = ncol(forcing[[1]])
+  # Estimate forcing data that not supplied.
+  if ("PRESS" %in% forc_lack) {
+    forcing$PRESS = foreach(i = 1:ngrid, icount(), .c = cbind) %do% {
+      cal_Pa(frocing$TEMP[, i], elev = soil[, "ELEV"])
+    }
+  }
+
+  if ("LW" %in% forc_lack) {
+    J <- get_J()
+    forcing$LW = foreach(i = 1:ngrid, icount(), .c = cbind) %do% {
+      lat = soil[i, "LAT"]
+      cal_lw(forcing$TEMP[, i], forcing$VP[, i], forcing$SW[, i], lat, J)
+    }
+  }
+  forcing[forc_types]
+}
+
+check_veg <- function(iveg) {
+  if (is.null(nrow(iveg)) || ncol(iveg) <= 1) {
+    matrix(nrow = 0, ncol = 8)
+  } else {
+    iveg
+  }
 }

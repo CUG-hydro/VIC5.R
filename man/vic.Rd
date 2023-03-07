@@ -12,7 +12,7 @@ vic(
   soil,
   veg,
   output_info = NULL,
-  veglib = NULL,
+  veglib = veglib_LDAS,
   snowband = NULL,
   lake = NULL,
   forcing_veg = NULL,

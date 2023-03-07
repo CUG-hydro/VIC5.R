@@ -246,7 +246,7 @@
 #' @export
 vic <- function(forcing, soil, veg,
                 output_info = NULL,
-                veglib = NULL, snowband = NULL, lake = NULL,
+                veglib = veglib_LDAS, snowband = NULL, lake = NULL,
                 forcing_veg = NULL,
                 veg_force_types = c("albedo", "LAI", "fcanopy"),
                 parall = FALSE) {
@@ -262,129 +262,52 @@ vic <- function(forcing, soil, veg,
   n_outputs <- length(output_info)
   out_names <- names(output_info)
 
-  if (is.null(veglib)) {
-    veglib <- veglib_LDAS
-  } else {
-    if (is.data.frame(veglib)) {
-      veglib <- veglib[, !sapply(veglib, is.character)] %>% as.matrix()
-    }
+  if (is.data.frame(veglib)) {
+    veglib <- veglib[, !sapply(veglib, is.character)] %>% as.matrix()
   }
 
-  if (is.vector(soil)) {
-    soil <- t(soil)
-  }
-  soil <- as.matrix(soil)
+  soil %<>% check_matrix()
+  lake %<>% check_matrix()
+  snowband %<>% check_matrix()
 
+  if (!is.list(veg)) veg <- list(veg)
+  forcing %<>% check_forcing(soil)
+
+  minfl <- get_forclen()
   ncell <- nrow(soil)
   cellid <- soil[, 2]
 
-  # Check length of forcing data.
-  minfl <- get_forclen()
-  for (ft in names(forcing)) {
-    fl <- nrow(forcing[[ft]])
-    if (is.null(nrow(forcing[[ft]]))) fl <- length(forcing[[ft]])
-    if (fl < minfl) {
-      stop(sprintf(
-        'Length of forcing data "%s" (%d) is too short for model require (%d).',
-        ft, fl, minfl
-      ))
-    }
-    fc <- ncol(forcing[[ft]])
-    if (is.null(fc) && ncell > 1 || fc < ncell) {
-      stop(sprintf('Columns of forcing data "%s" (%d) are too few for model require. It should no less than number of gridcells (%d).', ft, fc, ncell))
-    }
-  }
-
-  if (!is.list(veg)) veg <- list(veg)
-
-  if (is.vector(lake)) {
-    lake <- t(lake)
-  } else if (!is.null(lake)) {
-    lake %<>% as.matrix()
-  }
-
-  if (is.vector(snowband)) {
-    snowband %<>% t()
-  } else if (!is.null(snowband)) {
-    snowband %<>% as.matrix()
-  }
-
-  forc_types <- c("PREC", "TEMP", "SW", "LW", "PRESS", "VP", "WIND")
   # The order of forc_types must not be change.
-
-  forc_lack <- forc_types[!(forc_types %in% names(forcing))]
+  forc_types <- c("PREC", "TEMP", "SW", "LW", "PRESS", "VP", "WIND")
   celev <- getOption("VIC_global_params")[["nlayers"]] * 4 + 10
-  if ("LW" %in% forc_lack) J <- get_J()
 
-  if (ncell == 1) forcing <- data.frame(forcing[forc_types])
+  if (ncell == 1) forcing %<>% as.data.frame()
 
   globalopt <- getOption("VIC_global_params")
   `%dof%` <- ifelse(parall, foreach::`%dopar%`, foreach::`%do%`)
 
   tp2 <- proc.time()
 
-  # 需要传递全局变量
   tmp_out <- foreach::foreach(i = 1:ncell) %dof% {
-    # tmp_out <- list()
-    # for (i in 1:ncell) {
     # running(i, 100)
     forc_veg <- matrix() # default
     if (!is.null(forcing_veg)) {
-      forc_veg <- forcing_veg[[i]]
-      attr(forc_veg, "types") <- veg_force_types
+      forc_veg <- set_attr(forcing_veg[[i]], "types", veg_force_types)
     }
 
     iband <- snowband[i, ] %||% -1
     ilake <- lake[i, ] %||% -1
+    iveg  <- check_veg(veg[[i]])
 
-    if (is.null(nrow(veg[[i]])) || ncol(veg[[i]]) <= 1) {
-      iveg <- matrix(nrow = 0, ncol = 8)
-    } else {
-      iveg <- veg[[i]]
-    }
-
-    forc <- sapply(forc_types, function(ft) {
-      if (ft %in% forc_lack) {
-        rep(0, minfl)
-      } else {
-        forcing[[ft]][1:minfl, i]
-      }
-    })
-
-    # Estimate forcing data that not supplied.
-    if ("PRESS" %in% forc_lack) {
-      elev <- soil[i, celev]
-      forc[, 5] <- cal_Pa(forc[, 2], elev)
-    }
-    if ("LW" %in% forc_lack) {
-      lat <- soil[i, 3]
-      # cal_lw(temp, vp, rdsn. lat, J)
-      forc[, 4] <- cal_lw(forc[, 2], forc[, 6], forc[, 3], lat, J)
-      # temp, vp, rsds, lat, J
-    }
-    
-    # p <- listk(
-    #   globalopt,
-    #   forc, soil[i, ], iband, iveg,
-    #   ilake, forc_veg, veglib, output_info
-    # )
-    # print(str(p))
+    forc <- sapply(forcing, function(x) x[1:minfl, i])
 
     iout <- vic_run_cell(
-      globalopt,
-      forc, soil[i, ], iband, iveg,
-      ilake, forc_veg, veglib, output_info
-    )
-    # tmp_out[[i]] = iout
+      globalopt, forc, soil[i, ], iband, iveg,
+      ilake, forc_veg, veglib, output_info)
     iout
   }
 
   tp3 <- proc.time()
-  # Run time in C
-  # cpp_time <- rbind(
-  #  c(rowSums(sapply(tmp_out, function(x)x[[n_outputs + 1]])), 0),
-  #  c(rowSums(sapply(tmp_out, function(x)x[[n_outputs + 2]])), 0),
-  #  c(rowSums(sapply(tmp_out, function(x)x[[n_outputs + 3]])), 0))
   out <- list()
 
   for (i in 1:n_outputs) {
@@ -396,25 +319,27 @@ vic <- function(forcing, soil, veg,
         set_dimnames(list(out_time, cellid))
       itype
     })
-    names(iout) <- out_header
-    out[[out_names[i]]] <- iout
+    out[[out_names[i]]] <- set_names(iout, out_header)
   }
-
   tp4 <- proc.time()
 
   time_table <- rbind(tp2 - tp1, tp3 - tp2, tp4 - tp3, tp4 - tp1)[, 1:3] %>% 
     set_rownames(c("init_time", "run_time", "final_time", "total_time")) %>% 
     round(4)
-  
-  # time_table <- rbind(time_table, cpp_time)
-  # rownames(time_table) <- c('init_time', 'run_time', 'final_time', 'total_time',
-  #                       'init_time(cpp)', 'run_time(cpp)', 'final_time(cpp)')
-  out[["timetable"]] <- time_table
-  out[["global_options"]] <- globalopt
-  out[["output_info"]] <- output_info
-  class(out) <- "vic_output"
-  out
+
+  out %<>% c(., listk(timetable = time_table, global_options = globalopt, output_info))
+  set_class(out, "vic_output")
 }
+
+# Run time in C
+# cpp_time <- rbind(
+#  c(rowSums(sapply(tmp_out, function(x)x[[n_outputs + 1]])), 0),
+#  c(rowSums(sapply(tmp_out, function(x)x[[n_outputs + 2]])), 0),
+#  c(rowSums(sapply(tmp_out, function(x)x[[n_outputs + 3]])), 0))
+
+# time_table <- rbind(time_table, cpp_time)
+# rownames(time_table) <- c('init_time', 'run_time', 'final_time', 'total_time',
+#                       'init_time(cpp)', 'run_time(cpp)', 'final_time(cpp)')
 
 #' @import magrittr
 default_output_info <- list(

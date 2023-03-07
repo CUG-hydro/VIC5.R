@@ -26,3 +26,12 @@ set_dimnames <- function(x, value) {
   dimnames(x) <- value
   x
 }
+
+check_matrix <- function(x) {
+  if (is.vector(x)) {
+    lake %<>% t()
+  } else if (!is.null(x)) {
+    x %<>% as.matrix()
+  }
+  x
+}

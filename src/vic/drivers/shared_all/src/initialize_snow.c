@@ -26,51 +26,54 @@
 
 #include <vic_driver_shared_all.h>
 
+void initialize_snow1(snow_data_struct *snow) {
+  // Prognostic states
+  snow->albedo = 0.0;
+  snow->canopy_albedo = 0.0;
+  snow->coldcontent = 0.0;
+  snow->coverage = 0.0;
+  snow->density = 0.0;
+  snow->depth = 0.0;
+  snow->last_snow = 0;
+  snow->max_snow_depth = 0.0;
+  snow->MELTING = false;
+  snow->pack_temp = 0.0;
+  snow->pack_water = 0.0;
+  snow->snow = false;
+  snow->snow_canopy = 0.0;
+  snow->store_coverage = 0.0;
+  snow->store_snow = false;
+  snow->store_swq = 0.0;
+  snow->surf_temp = 0.0;
+  snow->surf_temp_fbcount = 0;
+  snow->surf_temp_fbflag = false;
+  snow->surf_water = 0.0;
+  snow->swq = 0.0;
+  snow->snow_distrib_slope = 0.0;
+  snow->tmp_int_storage = 0.0;
+  
+  // Fluxes
+  snow->blowing_flux = 0.0;
+  snow->canopy_vapor_flux = 0.0;
+  snow->mass_error = 0.0;
+  snow->melt = 0.0;
+  snow->Qnet = 0.0;
+  snow->surface_flux = 0.0;
+  snow->transport = 0.0;
+  snow->vapor_flux = 0.0;
+}
+
 /******************************************************************************
  * @brief    Initialize the snow variable arrays for each new grid cell.
  *****************************************************************************/
-void
-initialize_snow(snow_data_struct **snow,
-                size_t             veg_num)
-{
-    extern option_struct options;
-    size_t               i, j;
+void initialize_snow(snow_data_struct **snow,
+                     size_t veg_num) {
+  extern option_struct options;
+  size_t i, j;
 
-    for (i = 0; i <= veg_num; i++) {
-        for (j = 0; j < options.SNOW_BAND; j++) {
-            // Prognostic states
-            snow[i][j].albedo = 0.0;
-            snow[i][j].canopy_albedo = 0.0;
-            snow[i][j].coldcontent = 0.0;
-            snow[i][j].coverage = 0.0;
-            snow[i][j].density = 0.0;
-            snow[i][j].depth = 0.0;
-            snow[i][j].last_snow = 0;
-            snow[i][j].max_snow_depth = 0.0;
-            snow[i][j].MELTING = false;
-            snow[i][j].pack_temp = 0.0;
-            snow[i][j].pack_water = 0.0;
-            snow[i][j].snow = false;
-            snow[i][j].snow_canopy = 0.0;
-            snow[i][j].store_coverage = 0.0;
-            snow[i][j].store_snow = false;
-            snow[i][j].store_swq = 0.0;
-            snow[i][j].surf_temp = 0.0;
-            snow[i][j].surf_temp_fbcount = 0;
-            snow[i][j].surf_temp_fbflag = false;
-            snow[i][j].surf_water = 0.0;
-            snow[i][j].swq = 0.0;
-            snow[i][j].snow_distrib_slope = 0.0;
-            snow[i][j].tmp_int_storage = 0.0;
-            // Fluxes
-            snow[i][j].blowing_flux = 0.0;
-            snow[i][j].canopy_vapor_flux = 0.0;
-            snow[i][j].mass_error = 0.0;
-            snow[i][j].melt = 0.0;
-            snow[i][j].Qnet = 0.0;
-            snow[i][j].surface_flux = 0.0;
-            snow[i][j].transport = 0.0;
-            snow[i][j].vapor_flux = 0.0;
-        }
+  for (i = 0; i <= veg_num; i++) {
+    for (j = 0; j < options.SNOW_BAND; j++) {
+      initialize_snow1(&snow[i][j]);
     }
+  }
 }

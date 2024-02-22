@@ -15,10 +15,8 @@
 ## usethis namespace: end
 NULL
 
-.onLoad <- function (libname, pkgname){
+.onLoad <- function(libname, pkgname) {
   if(getRversion() >= "2.15.1") {
-    utils::globalVariables(
-      c(".", "i")
-    )
+    utils::globalVariables(c(".", "i"))
   }
 }

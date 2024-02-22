@@ -26,7 +26,7 @@
 
 #include <vic_driver_shared_all.h>
 
-initialize_veg1(veg_var_struct *veg_var) {
+void initialize_veg1(veg_var_struct *veg_var) {
   extern option_struct options;
 
   size_t k;

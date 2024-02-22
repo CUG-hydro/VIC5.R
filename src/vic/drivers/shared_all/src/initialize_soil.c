@@ -26,7 +26,7 @@
 
 #include <vic_driver_shared_all.h>
 
-initialize_soil1(cell_data_struct *cell) {
+void initialize_soil1(cell_data_struct *cell) {
   extern option_struct options;
 
   size_t lindex, frost_area;

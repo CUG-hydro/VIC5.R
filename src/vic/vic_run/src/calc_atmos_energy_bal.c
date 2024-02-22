@@ -41,99 +41,95 @@
  *           estimate the canopy air temperature.
  *****************************************************************************/
 double
-calc_atmos_energy_bal(double    InOverSensible,
-                      double    InUnderSensible,
-                      double    LatentHeatOver,
-                      double    LatentHeatUnder,
-                      double    LatentHeatSubOver,
-                      double    LatentHeatSubUnder,
-                      double    NetLongOver,
-                      double    NetLongUnder,
-                      double    NetShortOver,
-                      double    NetShortUnder,
-                      double    Ra,
-                      double    Tair,
-                      double    atmos_density,
-                      double   *Error,
-                      double   *LatentHeat,
-                      double   *LatentHeatSub,
-                      double   *NetLongAtmos,
-                      double   *NetShortAtmos,
-                      double   *SensibleHeat,
-                      bool     *Tcanopy_fbflag,
-                      unsigned *Tcanopy_fbcount)
-{
-    extern option_struct     options;
-    extern parameters_struct param;
+calc_atmos_energy_bal(double InOverSensible,
+                      double InUnderSensible,
+                      double LatentHeatOver,
+                      double LatentHeatUnder,
+                      double LatentHeatSubOver,
+                      double LatentHeatSubUnder,
+                      double NetLongOver,
+                      double NetLongUnder,
+                      double NetShortOver,
+                      double NetShortUnder,
+                      double Ra,
+                      double Tair,
+                      double atmos_density,
+                      double *Error,
+                      double *LatentHeat,
+                      double *LatentHeatSub,
+                      double *NetLongAtmos,
+                      double *NetShortAtmos,
+                      double *SensibleHeat,
+                      bool *Tcanopy_fbflag,
+                      unsigned *Tcanopy_fbcount) {
+  extern option_struct options;
+  extern parameters_struct param;
 
-    double                   F; // canopy closure fraction, not currently used by VIC
-    double                   InSensible;
-    double                   NetRadiation;
-    double                   T_lower;
-    double                   T_upper;
-    double                   Tcanopy;
+  double F;  // canopy closure fraction, not currently used by VIC
+  double InSensible;
+  double NetRadiation;
+  double T_lower;
+  double T_upper;
+  double Tcanopy;
 
-    F = 1;
+  F = 1;
 
-    // compute incoming sensible heat
-    InSensible = InOverSensible + InUnderSensible;
-    (*SensibleHeat) = InOverSensible + InUnderSensible;
+  // compute incoming sensible heat
+  InSensible = InOverSensible + InUnderSensible;
+  (*SensibleHeat) = InOverSensible + InUnderSensible;
 
-    // compute net radiation
-    (*NetLongAtmos) = (F * NetLongOver + (1. - F) * NetLongUnder);
+  // compute net radiation
+  (*NetLongAtmos) = (F * NetLongOver + (1. - F) * NetLongUnder);
 
-    (*NetShortAtmos) = (NetShortOver + NetShortUnder);
+  (*NetShortAtmos) = (NetShortOver + NetShortUnder);
 
-    NetRadiation = (*NetShortAtmos + *NetLongAtmos);
+  NetRadiation = (*NetShortAtmos + *NetLongAtmos);
 
-    // compute total latent heat flux
-    (*LatentHeat) = (LatentHeatOver + LatentHeatUnder);
+  // compute total latent heat flux
+  (*LatentHeat) = (LatentHeatOver + LatentHeatUnder);
 
-    (*LatentHeatSub) = (LatentHeatSubOver + LatentHeatSubUnder);
+  (*LatentHeatSub) = (LatentHeatSubOver + LatentHeatSubUnder);
 
-    /******************************
-       Find Canopy Air Temperature
-    ******************************/
+  /******************************
+     Find Canopy Air Temperature
+  ******************************/
 
-    if (options.CLOSE_ENERGY) {
-        /* initialize Tcanopy_fbflag */
-        *Tcanopy_fbflag = 0;
+  if (options.CLOSE_ENERGY) {
+    /* initialize Tcanopy_fbflag */
+    *Tcanopy_fbflag = 0;
 
-        /* set initial bounds for root brent **/
-        T_lower = (Tair) - param.CANOPY_DT;
-        T_upper = (Tair) + param.CANOPY_DT;
+    /* set initial bounds for root brent **/
+    T_lower = (Tair)-param.CANOPY_DT;
+    T_upper = (Tair) + param.CANOPY_DT;
 
-        // iterate for canopy air temperature
-        Tcanopy = root_brent(T_lower, T_upper,
-                             func_atmos_energy_bal, Ra, Tair, atmos_density,
-                             InSensible, SensibleHeat);
+    // iterate for canopy air temperature
+    Tcanopy = root_brent(T_lower, T_upper,
+                         func_atmos_energy_bal, Ra, Tair, atmos_density,
+                         InSensible, SensibleHeat);
 
-        if (Tcanopy <= -998) {
-            if (options.TFALLBACK) {
-                Tcanopy = Tair;
-                *Tcanopy_fbflag = 1;
-                (*Tcanopy_fbcount)++;
-            }
-            else {
-                // handle error flag from root brent
-                (*Error) = error_calc_atmos_energy_bal(Tcanopy, (*LatentHeat) +
-                                                       (*LatentHeatSub),
-                                                       NetRadiation, Ra, Tair,
-                                                       atmos_density,
-                                                       InSensible,
-                                                       SensibleHeat);
-                return (VIC_ERROR);
-            }
-        }
-    }
-    else {
+    if (Tcanopy <= -998) {
+      if (options.TFALLBACK) {
         Tcanopy = Tair;
+        *Tcanopy_fbflag = 1;
+        (*Tcanopy_fbcount)++;
+      } else {
+        // handle error flag from root brent
+        (*Error) = error_calc_atmos_energy_bal(Tcanopy, (*LatentHeat) + (*LatentHeatSub),
+                                               NetRadiation, Ra, Tair,
+                                               atmos_density,
+                                               InSensible,
+                                               SensibleHeat);
+        return (VIC_ERROR);
+      }
     }
+  } else {
+    Tcanopy = Tair;
+  }
 
-    // compute variables based on final temperature
-    (*Error) = solve_atmos_energy_bal(Tcanopy, Ra, Tair, atmos_density,
-                                      InSensible, SensibleHeat);
-    return(Tcanopy);
+  // compute variables based on final temperature
+  (*Error) = solve_atmos_energy_bal(Tcanopy, Ra, Tair, atmos_density,
+                                    InSensible, SensibleHeat);
+  return (Tcanopy);
 }
 
 /******************************************************************************
@@ -141,17 +137,16 @@ calc_atmos_energy_bal(double    InOverSensible,
  *****************************************************************************/
 double
 solve_atmos_energy_bal(double Tcanopy,
-                       ...)
-{
-    va_list ap;
+                       ...) {
+  va_list ap;
 
-    double  error;
+  double error;
 
-    va_start(ap, Tcanopy);
-    error = func_atmos_energy_bal(Tcanopy, ap);
-    va_end(ap);
+  va_start(ap, Tcanopy);
+  error = func_atmos_energy_bal(Tcanopy, ap);
+  va_end(ap);
 
-    return error;
+  return error;
 }
 
 /******************************************************************************
@@ -160,80 +155,77 @@ solve_atmos_energy_bal(double Tcanopy,
  *****************************************************************************/
 double
 error_calc_atmos_energy_bal(double Tcanopy,
-                            ...)
-{
-    va_list ap;
+                            ...) {
+  va_list ap;
 
-    double  error;
+  double error;
 
-    va_start(ap, Tcanopy);
-    error = error_print_atmos_energy_bal(Tcanopy, ap);
-    va_end(ap);
+  va_start(ap, Tcanopy);
+  error = error_print_atmos_energy_bal(Tcanopy, ap);
+  va_end(ap);
 
-    return error;
+  return error;
 }
 
 /******************************************************************************
  * @brief    Print atmos energy balance terms.
  *****************************************************************************/
 double
-error_print_atmos_energy_bal(double  Tcanopy,
-                             va_list ap)
-{
-    double  LatentHeat;
-    double  NetRadiation;
-    double  Ra;
-    double  Tair;
-    double  atmos_density;
-    double  InSensible;
+error_print_atmos_energy_bal(double Tcanopy,
+                             va_list ap) {
+  double LatentHeat;
+  double NetRadiation;
+  double Ra;
+  double Tair;
+  double atmos_density;
+  double InSensible;
 
-    double *SensibleHeat;
+  double *SensibleHeat;
 
-    // extract variables from va_arg
-    LatentHeat = (double)  va_arg(ap, double);
-    NetRadiation = (double)  va_arg(ap, double);
-    Ra = (double)  va_arg(ap, double);
-    Tair = (double)  va_arg(ap, double);
-    atmos_density = (double)  va_arg(ap, double);
-    InSensible = (double)  va_arg(ap, double);
+  // extract variables from va_arg
+  LatentHeat = (double)va_arg(ap, double);
+  NetRadiation = (double)va_arg(ap, double);
+  Ra = (double)va_arg(ap, double);
+  Tair = (double)va_arg(ap, double);
+  atmos_density = (double)va_arg(ap, double);
+  InSensible = (double)va_arg(ap, double);
 
-    SensibleHeat = (double *)va_arg(ap, double *);
+  SensibleHeat = (double *)va_arg(ap, double *);
 
-    // print variable values
-    log_warn("Failure to converge to a solution in root_brent.\n"
-             "Check for invalid values.\n"
-             "Tcanopy = %f\n"
-             "LatentHeat = %f\n"
-             "NetRadiation = %f\n"
-             "Ra = %f\n"
-             "Tair = %f\n"
-             "atmos_density = %f\n"
-             "InSensible = %f\n"
-             "*SensibleHeat = %f\n"
-             "Try increasing CANOPY_DT to get model to complete cell.\n"
-             "Then check output for instabilities.",
-             Tcanopy, LatentHeat, NetRadiation, Ra, Tair, atmos_density,
-             InSensible, *SensibleHeat);
+  // print variable values
+  log_warn(
+      "Failure to converge to a solution in root_brent.\n"
+      "Check for invalid values.\n"
+      "Tcanopy = %f\n"
+      "LatentHeat = %f\n"
+      "NetRadiation = %f\n"
+      "Ra = %f\n"
+      "Tair = %f\n"
+      "atmos_density = %f\n"
+      "InSensible = %f\n"
+      "*SensibleHeat = %f\n"
+      "Try increasing CANOPY_DT to get model to complete cell.\n"
+      "Then check output for instabilities.",
+      Tcanopy, LatentHeat, NetRadiation, Ra, Tair, atmos_density,
+      InSensible, *SensibleHeat);
 
-    return(VIC_ERROR);
+  return (VIC_ERROR);
 }
 
 /******************************************************************************
  * @brief   Dummy function to allow calling func_atmos_moist_bal() directly.
  *****************************************************************************/
 double
-solve_atmos_moist_bal(double VPcanopy,
-                      ...)
-{
-    va_list ap;
+solve_atmos_moist_bal(double VPcanopy, ...) {
+  va_list ap;
 
-    double  error;
+  double error;
 
-    va_start(ap, VPcanopy);
-    error = func_atmos_moist_bal(VPcanopy, ap);
-    va_end(ap);
+  va_start(ap, VPcanopy);
+  error = func_atmos_moist_bal(VPcanopy, ap);
+  va_end(ap);
 
-    return error;
+  return error;
 }
 
 /******************************************************************************
@@ -241,57 +233,54 @@ solve_atmos_moist_bal(double VPcanopy,
  *           directly.
  *****************************************************************************/
 double
-error_calc_atmos_moist_bal(double VPcanopy,
-                           ...)
-{
-    va_list ap;
+error_calc_atmos_moist_bal(double VPcanopy, ...) {
+  va_list ap;
 
-    double  error;
+  double error;
 
-    va_start(ap, VPcanopy);
-    error = error_print_atmos_moist_bal(VPcanopy, ap);
-    va_end(ap);
+  va_start(ap, VPcanopy);
+  error = error_print_atmos_moist_bal(VPcanopy, ap);
+  va_end(ap);
 
-    return error;
+  return error;
 }
 
 /******************************************************************************
  * @brief    Print atmos moist energy balance terms.
  *****************************************************************************/
 double
-error_print_atmos_moist_bal(double  VPcanopy,
-                            va_list ap)
-{
-    double  InLatent;
-    double  Lv;
-    double  Ra;
-    double  atmos_density;
-    double  gamma;
-    double  vp;
-    double *AtmosLatent;
+error_print_atmos_moist_bal(double VPcanopy, va_list ap) {
+  double InLatent;
+  double Lv;
+  double Ra;
+  double atmos_density;
+  double gamma;
+  double vp;
+  double *AtmosLatent;
 
-    // extract variables from va_arg
-    InLatent = (double)  va_arg(ap, double);
-    Lv = (double)  va_arg(ap, double);
-    Ra = (double)  va_arg(ap, double);
-    atmos_density = (double)  va_arg(ap, double);
-    gamma = (double)  va_arg(ap, double);
-    vp = (double)  va_arg(ap, double);
-    AtmosLatent = (double *)va_arg(ap, double *);
+  // extract variables from va_arg
+  InLatent = (double)va_arg(ap, double);
+  Lv = (double)va_arg(ap, double);
+  Ra = (double)va_arg(ap, double);
+  atmos_density = (double)va_arg(ap, double);
+  gamma = (double)va_arg(ap, double);
+  vp = (double)va_arg(ap, double);
+  AtmosLatent = (double *)va_arg(ap, double *);
 
-    // print variable values
-    log_err("VPcanopy = %f\n"
-            "InLatent = %f\n"
-            "Lv = %f\n"
-            "Ra = %f\n"
-            "atmos_density = %f\n"
-            "gamma = %f\n"
-            "vp = %f\n"
-            "AtmosLatent = %f\n"
-            "Try increasing CANOPY_VP to get model to complete cell.\n"
-            "Then check output for instabilities.",
-            VPcanopy, InLatent, Lv, Ra, atmos_density, gamma, vp,
-            *AtmosLatent);
+  // print variable values
+  log_err(
+      "VPcanopy = %f\n"
+      "InLatent = %f\n"
+      "Lv = %f\n"
+      "Ra = %f\n"
+      "atmos_density = %f\n"
+      "gamma = %f\n"
+      "vp = %f\n"
+      "AtmosLatent = %f\n"
+      "Try increasing CANOPY_VP to get model to complete cell.\n"
+      "Then check output for instabilities.",
+      VPcanopy, InLatent, Lv, Ra, atmos_density, gamma, vp,
+      *AtmosLatent);
 
-    return(0.0);
+  return (0.0);
 }

@@ -29,7 +29,7 @@ set_dimnames <- function(x, value) {
 
 check_matrix <- function(x) {
   if (is.vector(x)) {
-    lake %<>% t()
+    x %<>% t()
   } else if (!is.null(x)) {
     x %<>% as.matrix()
   }

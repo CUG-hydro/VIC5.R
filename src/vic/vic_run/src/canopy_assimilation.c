@@ -29,50 +29,48 @@
 /******************************************************************************
  * @brief    Calculate GPP, Raut, and NPP for veg cover with multi-layer canopy
  *****************************************************************************/
-void
-canopy_assimilation(char    Ctype,
-                    double  MaxCarboxRate,
-                    double  MaxETransport,
-                    double  CO2Specificity,
-                    double *NscaleFactor,
-                    double  Tfoliage,
-                    double  SWdown,
-                    double *aPAR,
-                    double  elevation,
-                    double  Catm,
-                    double *CanopLayerBnd,
-                    double  LAItotal,
-                    char   *mode,
-                    double *rsLayer,
-                    double *rc,
-                    double *Ci,
-                    double *GPP,
-                    double *Rdark,
-                    double *Rphoto,
-                    double *Rmaint,
-                    double *Rgrowth,
-                    double *Raut,
-                    double *NPP)
-{
-    extern option_struct     options;
+void canopy_assimilation(char Ctype,
+                         double MaxCarboxRate,
+                         double MaxETransport,
+                         double CO2Specificity,
+                         double *NscaleFactor,
+                         double Tfoliage,
+                         double SWdown,
+                         double *aPAR,
+                         double elevation,
+                         double Catm,
+                         double *CanopLayerBnd,
+                         double LAItotal,
+                         char *mode,
+                         double *rsLayer,
+                         double *rc,
+                         double *Ci,
+                         double *GPP,
+                         double *Rdark,
+                         double *Rphoto,
+                         double *Rmaint,
+                         double *Rgrowth,
+                         double *Raut,
+                         double *NPP) {
+    extern option_struct options;
     extern parameters_struct param;
 
-    double                   h;
-    double                   pz;
-    size_t                   cidx;
-    double                   dLAI;
-    double                  *CiLayer = NULL;
-    double                   AgrossLayer;
-    double                   RdarkLayer;
-    double                   RphotoLayer;
-    double                   gc; /* 1/rs */
+    double h;
+    double pz;
+    size_t cidx;
+    double dLAI;
+    double *CiLayer = NULL;
+    double AgrossLayer;
+    double RdarkLayer;
+    double RphotoLayer;
+    double gc; /* 1/rs */
 
     /* calculate scale height based on average temperature in the column */
     h = calc_scale_height(Tfoliage, elevation);
 
     /* use hypsometric equation to calculate p_z, assume that virtual
        temperature is equal air_temp */
-    pz = CONST_PSTD * exp(-(double) elevation / h);
+    pz = CONST_PSTD * exp(-(double)elevation / h);
 
     CiLayer = calloc(options.Ncanopy, sizeof(*CiLayer));
     check_alloc_status(CiLayer, "Memory allocation error.");
@@ -85,15 +83,13 @@ canopy_assimilation(char    Ctype,
         for (cidx = 0; cidx < options.Ncanopy; cidx++) {
             if (Ctype == PHOTO_C3) {
                 CiLayer[cidx] = param.PHOTO_FCI1C3 * Catm;
-            }
-            else if (Ctype == PHOTO_C4) {
+            } else if (Ctype == PHOTO_C4) {
                 CiLayer[cidx] = param.PHOTO_FCI1C4 * Catm;
             }
         }
         if (Ctype == PHOTO_C3) {
             *Ci = param.PHOTO_FCI1C3 * Catm;
-        }
-        else if (Ctype == PHOTO_C4) {
+        } else if (Ctype == PHOTO_C4) {
             *Ci = param.PHOTO_FCI1C4 * Catm;
         }
 
@@ -123,8 +119,7 @@ canopy_assimilation(char    Ctype,
             if (cidx > 0) {
                 dLAI = LAItotal *
                        (CanopLayerBnd[cidx] - CanopLayerBnd[cidx - 1]);
-            }
-            else {
+            } else {
                 dLAI = LAItotal * CanopLayerBnd[cidx];
             }
 
@@ -141,8 +136,7 @@ canopy_assimilation(char    Ctype,
         if (*rc > param.HUGE_RESIST) {
             *rc = param.HUGE_RESIST;
         }
-    }
-    else {
+    } else {
         /* Stomatal resistance given; compute assimilation, respiration, and leaf-internal CO2 */
 
         /* Sum over canopy layers */
@@ -171,8 +165,7 @@ canopy_assimilation(char    Ctype,
             if (cidx > 0) {
                 dLAI = LAItotal *
                        (CanopLayerBnd[cidx] - CanopLayerBnd[cidx - 1]);
-            }
-            else {
+            } else {
                 dLAI = LAItotal * CanopLayerBnd[cidx];
             }
 
@@ -190,5 +183,5 @@ canopy_assimilation(char    Ctype,
     *Raut = *Rmaint + *Rgrowth;
     *NPP = *GPP - *Raut;
 
-    free((char*) CiLayer);
+    free((char *)CiLayer);
 }

@@ -35,32 +35,31 @@
  *           Uref, you need to multiply the here calculated wind speeds by Uref
  *           and divide the here calculated aerodynamic resistances by Uref.
  *****************************************************************************/
-int
-CalcAerodynamic(bool    OverStory,          /* overstory flag */
-                double  Height,             /* vegetation height */
-                double  Trunk,              /* trunk ratio parameter */
-                double  Z0_SNOW,            /* snow roughness */
-                double  Z0_SOIL,            /* soil roughness */
-                double  n,                  /* wind attenuation parameter */
-                double *Ra,                 /* aerodynamic resistances */
-                double *U,                  /* adjusted wind speed */
-                double *displacement,       /* vegetation displacement */
-                double *ref_height,         /* vegetation reference height */
-                double *roughness)          /* vegetation roughness */
+int CalcAerodynamic(bool OverStory,       /* overstory flag */
+                    double Height,        /* vegetation height */
+                    double Trunk,         /* trunk ratio parameter */
+                    double Z0_SNOW,       /* snow roughness */
+                    double Z0_SOIL,       /* soil roughness */
+                    double n,             /* wind attenuation parameter */
+                    double *Ra,           /* aerodynamic resistances */
+                    double *U,            /* adjusted wind speed */
+                    double *displacement, /* vegetation displacement */
+                    double *ref_height,   /* vegetation reference height */
+                    double *roughness)    /* vegetation roughness */
 {
     extern parameters_struct param;
 
-    double                   d_Lower;
-    double                   d_Upper;
-    double                   K2;
-    double                   Uh;
-    double                   Ut;
-    double                   Uw;
-    double                   Z0_Lower;
-    double                   Z0_Upper;
-    double                   Zt;
-    double                   Zw;
-    double                   tmp_wind;
+    double d_Lower;
+    double d_Upper;
+    double K2;
+    double Uh;
+    double Ut;
+    double Uw;
+    double Z0_Lower;
+    double Z0_Upper;
+    double Zt;
+    double Zw;
+    double tmp_wind;
 
     tmp_wind = U[0];
 
@@ -75,12 +74,14 @@ CalcAerodynamic(bool    OverStory,          /* overstory flag */
 
         /* No snow */
         U[0] = log((2. + Z0_Lower) / Z0_Lower) / log(
-            (ref_height[0] - d_Lower) / Z0_Lower);
+                                                     (ref_height[0] - d_Lower) / Z0_Lower);
 
         /* Old VIC, may not match DHSVM */
         Ra[0] = log((2. + (1.0 / 0.63 - 1.0) * d_Lower) / Z0_Lower) *
                 log((2. +
-                     (1.0 / 0.63 - 1.0) * d_Lower) / (0.1 * Z0_Lower)) / K2;
+                     (1.0 / 0.63 - 1.0) * d_Lower) /
+                    (0.1 * Z0_Lower)) /
+                K2;
 
         /* Copy bare parameters into canopy top parameters */
         U[1] = U[0];
@@ -119,24 +120,26 @@ CalcAerodynamic(bool    OverStory,          /* overstory flag */
         /* Resistance for overstory */
         Ra[1] = log((ref_height[0] - d_Upper) / Z0_Upper) / K2 *
                 (Height / (n * (Zw - d_Upper)) *
-                 (exp(n * (1 - (d_Upper + Z0_Upper) / Height)) - 1) +
+                     (exp(n * (1 - (d_Upper + Z0_Upper) / Height)) - 1) +
                  (Zw - Height) / (Zw - d_Upper) +
                  log((ref_height[0] - d_Upper) / (Zw - d_Upper)));
 
         /* Wind at different levels in the profile */
         Uw = log((Zw - d_Upper) / Z0_Upper) / log(
-            (ref_height[0] - d_Upper) / Z0_Upper);
+                                                  (ref_height[0] - d_Upper) / Z0_Upper);
         Uh = Uw - (1 - (Height - d_Upper) / (Zw - d_Upper)) /
-             log((ref_height[0] - d_Upper) / Z0_Upper);
+                      log((ref_height[0] - d_Upper) / Z0_Upper);
         U[1] = Uh * exp(n * ((Z0_Upper + d_Upper) / Height - 1.));
         Ut = Uh * exp(n * (Zt / Height - 1.));
 
         /* resistance at the lower boundary */
         U[0] = log((2. + Z0_Upper) / Z0_Upper) / log(
-            (ref_height[0] - d_Upper) / Z0_Upper);
+                                                     (ref_height[0] - d_Upper) / Z0_Upper);
         Ra[0] = log((2. + (1.0 / 0.63 - 1.0) * d_Upper) / Z0_Upper) *
                 log((2. +
-                     (1.0 / 0.63 - 1.0) * d_Upper) / (0.1 * Z0_Upper)) / K2;
+                     (1.0 / 0.63 - 1.0) * d_Upper) /
+                    (0.1 * Z0_Upper)) /
+                K2;
 
         /* Snow */
 
@@ -154,13 +157,16 @@ CalcAerodynamic(bool    OverStory,          /* overstory flag */
         else if (Height > (2. + Z0_SNOW)) {
             U[2] = Uh * exp(n * ((2. + Z0_SNOW) / Height - 1.));
             Ra[2] = log(Zt / Z0_SNOW) * log(Zt / Z0_SNOW) /
-                    (K2 * Ut) +
+                        (K2 * Ut) +
                     Height *
-                    log((ref_height[0] -
-                         d_Upper) / Z0_Upper) / (n * K2 * (Zw - d_Upper)) *
-                    (exp(n *
-                         (1 - Zt /
-                          Height)) - exp(n * (1 - (Z0_SNOW + 2.) / Height)));
+                        log((ref_height[0] -
+                             d_Upper) /
+                            Z0_Upper) /
+                        (n * K2 * (Zw - d_Upper)) *
+                        (exp(n *
+                             (1 - Zt /
+                                      Height)) -
+                         exp(n * (1 - (Z0_SNOW + 2.) / Height)));
         }
 
         /* case 3: the top of the overstory is less than 2 m above the lower
@@ -170,13 +176,16 @@ CalcAerodynamic(bool    OverStory,          /* overstory flag */
         else {
             U[2] = Uh;
             Ra[2] = log(Zt / Z0_SNOW) * log(Zt / Z0_SNOW) /
-                    (K2 * Ut) +
+                        (K2 * Ut) +
                     Height *
-                    log((ref_height[0] -
-                         d_Upper) / Z0_Upper) / (n * K2 * (Zw - d_Upper)) *
-                    (exp(n * (1 - Zt / Height)) - 1);
-            log_warn("Top of overstory is less than 2 meters above the lower "
-                     "boundary");
+                        log((ref_height[0] -
+                             d_Upper) /
+                            Z0_Upper) /
+                        (n * K2 * (Zw - d_Upper)) *
+                        (exp(n * (1 - Zt / Height)) - 1);
+            log_warn(
+                "Top of overstory is less than 2 meters above the lower "
+                "boundary");
         }
 
         /** Set aerodynamic resistance terms for canopy */
@@ -205,8 +214,7 @@ CalcAerodynamic(bool    OverStory,          /* overstory flag */
             U[2] *= tmp_wind;
             Ra[2] /= tmp_wind;
         }
-    }
-    else {
+    } else {
         U[0] *= tmp_wind;
         Ra[0] = param.HUGE_RESIST;
         if (U[1] != -999) {

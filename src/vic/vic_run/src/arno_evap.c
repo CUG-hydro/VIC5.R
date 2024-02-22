@@ -36,32 +36,31 @@
  *****************************************************************************/
 double
 arno_evap(layer_data_struct *layer,
-          double             rad,
-          double             air_temp,
-          double             vpd,
-          double             depth1,
-          double             max_moist,
-          double             elevation,
-          double             b_infilt,
-          double             ra,
-          double             delta_t,
-          double             moist_resid,
-          double            *frost_fract)
-{
+          double rad,
+          double air_temp,
+          double vpd,
+          double depth1,
+          double max_moist,
+          double elevation,
+          double b_infilt,
+          double ra,
+          double delta_t,
+          double moist_resid,
+          double *frost_fract) {
     extern parameters_struct param;
-    extern option_struct     options;
+    extern option_struct options;
 
-    int                      num_term;
-    int                      i;
-    size_t                   frost_area;
-    double                   tmp, beta_asp, dummy;
-    double                   ratio, as;
-    double                   Epot; /* potential bare soil evaporation */
-    double                   moist;
-    double                   esoil;
-    double                   max_infil;
-    double                   Evap;
-    double                   tmpsum;
+    int num_term;
+    int i;
+    size_t frost_area;
+    double tmp, beta_asp, dummy;
+    double ratio, as;
+    double Epot; /* potential bare soil evaporation */
+    double moist;
+    double esoil;
+    double max_infil;
+    double Evap;
+    double tmpsum;
 
     Evap = 0;
 
@@ -70,7 +69,8 @@ arno_evap(layer_data_struct *layer,
     for (frost_area = 0; frost_area < options.Nfrost; frost_area++) {
         moist +=
             (layer[0].moist -
-             layer[0].ice[frost_area]) * frost_fract[frost_area];
+             layer[0].ice[frost_area]) *
+            frost_fract[frost_area];
     }
     if (moist > max_moist) {
         moist = max_moist;
@@ -80,7 +80,8 @@ arno_evap(layer_data_struct *layer,
 
     Epot =
         penman(air_temp, elevation, rad, vpd, ra, 0.0,
-               param.SOIL_RARC) * delta_t / CONST_CDAY;
+               param.SOIL_RARC) *
+        delta_t / CONST_CDAY;
 
     /**********************************************************************/
     /*  Compute temporary infiltration rate based on given soil_moist.    */
@@ -88,21 +89,20 @@ arno_evap(layer_data_struct *layer,
     max_infil = (1.0 + b_infilt) * max_moist;
     if (b_infilt == -1.0) {
         tmp = max_infil;
-    }
-    else {
+    } else {
         ratio = 1.0 - (moist) / (max_moist);
         if (ratio > 1.0) {
-          log_err("SOIL RATIO GREATER THAN 1.0: moisture %f  "
-                    "max_moisture %f -> ratio = %f",
-                    moist, max_moist, ratio);
-        }
-        else {
+            log_err(
+                "SOIL RATIO GREATER THAN 1.0: moisture %f  "
+                "max_moisture %f -> ratio = %f",
+                moist, max_moist, ratio);
+        } else {
             if (ratio < 0.0) {
-                log_err("SOIL RATIO LESS THAN 0.0: moisture %f   "
-                        "max_moisture %f -> ratio = %e",
-                        moist, max_moist, ratio);
-            }
-            else {
+                log_err(
+                    "SOIL RATIO LESS THAN 0.0: moisture %f   "
+                    "max_moisture %f -> ratio = %e",
+                    moist, max_moist, ratio);
+            } else {
                 ratio = pow(ratio, (1.0 / (b_infilt + 1.0)));
             }
         }
@@ -115,8 +115,7 @@ arno_evap(layer_data_struct *layer,
 
     if (tmp >= max_infil) {
         esoil = Epot;
-    }
-    else {
+    } else {
         /********************************************************************/
         /*  Compute As. 'As' is % area saturated, '1-As' is % area          */
         /*  that is unsaturated.                                            */
@@ -127,12 +126,10 @@ arno_evap(layer_data_struct *layer,
 
         if (ratio > 1.0) {
             log_err("EVAP RATIO GREATER THAN 1.0");
-        }
-        else {
+        } else {
             if (ratio < 0.0) {
                 log_err("EVAP RATIO LESS THAN 0.0");
-            }
-            else {
+            } else {
                 if (ratio != 0.0) {
                     ratio = pow(ratio, b_infilt);
                 }
@@ -173,8 +170,7 @@ arno_evap(layer_data_struct *layer,
             if (esoil > moist - moist_resid * depth1 * MM_PER_M) {
                 esoil = moist - moist_resid * depth1 * MM_PER_M;
             }
-        }
-        else {
+        } else {
             /* no moisture available; cap esoil at 0 */
             esoil = 0.0;
         }
@@ -183,5 +179,5 @@ arno_evap(layer_data_struct *layer,
     layer[0].esoil = esoil;
     Evap += esoil / MM_PER_M / delta_t;
 
-    return(Evap);
+    return (Evap);
 }

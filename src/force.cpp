@@ -1,20 +1,19 @@
 #include <vic_R.h>
 
 void make_force(force_data_struct &force, NumericMatrix &forcing_data,
-           soil_con_struct* soil_con, int rec, dmy_struct *dmy) {
+                soil_con_struct *soil_con, int rec, dmy_struct *dmy) {
+  extern option_struct options;
+  // extern global_param_struct global_param;
+  extern parameters_struct param;
+  extern size_t NR, NF;
 
-  extern option_struct       options;
-  //extern global_param_struct global_param;
-  extern parameters_struct   param;
-  extern size_t              NR, NF;
+  int offset;
+  double t_offset;
+  size_t i;
+  size_t uidx;
+  double *Tfactor;
 
-  int                        offset;
-  double                     t_offset;
-  size_t                     i;
-  size_t                     uidx;
-  double                    *Tfactor;
-
-  Tfactor = soil_con -> Tfactor;
+  Tfactor = soil_con->Tfactor;
   t_offset = Tfactor[0];
   for (i = 1; i < options.SNOW_BAND; i++) {
     if (Tfactor[i] < t_offset) {
@@ -45,35 +44,34 @@ void make_force(force_data_struct &force, NumericMatrix &forcing_data,
     }
     // air density in kg/m3
     force.density[i] = air_density(force.air_temp[i],
-                                        force.pressure[i]);
+                                   force.pressure[i]);
     // wind speed in m/s
     force.wind[i] = forcing_data(uidx, 6);
     // snow flag
     force.snowflag[i] = will_it_snow(&(force.air_temp[i]),
-                                          t_offset,
-                                          param.SNOW_MAX_SNOW_TEMP,
-                                          &(force.prec[i]), 1);
+                                     t_offset,
+                                     param.SNOW_MAX_SNOW_TEMP,
+                                     &(force.prec[i]), 1);
 
     // Optional inputs
     if (options.LAKES) {
       // Channel inflow from upstream (into lake)
       // if (param_set.TYPE[CHANNEL_IN].SUPPLIED) {
-      if (false) { // TODO: for channel in.
-        offset ++;
-        force.channel_in[i] = forcing_data(uidx, 6+offset);
-      }
-      else {
+      if (false) {  // TODO: for channel in.
+        offset++;
+        force.channel_in[i] = forcing_data(uidx, 6 + offset);
+      } else {
         force.channel_in[i] = 0;
       }
     }
     if (options.CARBON) {
-      offset ++;
+      offset++;
       // Atmospheric CO2 concentration
-      force.Catm[i] = forcing_data(uidx, 6+offset);
+      force.Catm[i] = forcing_data(uidx, 6 + offset);
       // Fraction of shortwave that is direct
-      force.fdir[i] = forcing_data(uidx, 7+offset);
+      force.fdir[i] = forcing_data(uidx, 7 + offset);
       // photosynthetically active radiation
-      force.par[i] = forcing_data(uidx, 8+offset);
+      force.par[i] = forcing_data(uidx, 8 + offset);
       // Cosine of solar zenith angle
       force.coszen[i] = compute_coszen(soil_con->lat,
                                        soil_con->lng,
@@ -102,7 +100,7 @@ void make_force(force_data_struct &force, NumericMatrix &forcing_data,
     }
     if (options.LAKES) {
       force.channel_in[NR] =
-        average(force.channel_in, NF) * NF;
+          average(force.channel_in, NF) * NF;
     }
     if (options.CARBON) {
       force.Catm[NR] = average(force.Catm, NF);
@@ -119,35 +117,32 @@ void make_force(force_data_struct &force, NumericMatrix &forcing_data,
 }
 
 IntegerVector get_veg_force_types(NumericMatrix &forcing_veg_data) {
-  //extern option_struct       options;
+  // extern option_struct       options;
 
-  CharacterVector            veg_par_types;
-  int                        Ntypes;
+  CharacterVector veg_par_types;
+  int Ntypes;
 
-  IntegerVector              temp;
+  IntegerVector temp;
 
-  if(is<CharacterVector>(forcing_veg_data.attr("types"))) {
-
+  if (is<CharacterVector>(forcing_veg_data.attr("types"))) {
     veg_par_types = as<CharacterVector>(forcing_veg_data.attr("types"));
     Ntypes = veg_par_types.length();
     temp = IntegerVector(Ntypes, -1);
 
-    for(int i = 0; i < Ntypes; i++) {
+    for (int i = 0; i < Ntypes; i++) {
       if (veg_par_types[i] == "albedo") {
         temp[i] = 0;
-      }
-      else if (veg_par_types[i] == "LAI") {
+      } else if (veg_par_types[i] == "LAI") {
         temp[i] = 1;
-      }
-      else if (veg_par_types[i] == "fcanopy") {
+      } else if (veg_par_types[i] == "fcanopy") {
         temp[i] = 2;
-      }
-      else {
-        log_err("Invalid vegetation forcing data type:"
-                  " %s.", ((String)veg_par_types[i]).get_cstring());
+      } else {
+        log_err(
+            "Invalid vegetation forcing data type:"
+            " %s.",
+            ((String)veg_par_types[i]).get_cstring());
       }
     }
-
   }
 
   return temp;
@@ -156,19 +151,18 @@ IntegerVector get_veg_force_types(NumericMatrix &forcing_veg_data) {
 void make_force_veg(NumericMatrix &forcing_veg_data,
                     IntegerVector &veg_force_types,
                     all_vars_struct *all_vars,
-                    veg_con_struct  *veg_con,
+                    veg_con_struct *veg_con,
                     int rec, dmy_struct *dmy) {
-
   extern option_struct options;
 
-  unsigned short       iveg;
-  size_t               Nveg;
-  unsigned short       band;
-  size_t               Nbands;
-  veg_var_struct     **veg_var;
-  CharacterVector      veg_par_types;
-  int                  Ntypes;
-  double               tmp_veg_val;
+  unsigned short iveg;
+  size_t Nveg;
+  unsigned short band;
+  size_t Nbands;
+  veg_var_struct **veg_var;
+  CharacterVector veg_par_types;
+  int Ntypes;
+  double tmp_veg_val;
 
   veg_var = all_vars->veg_var;
 
@@ -179,78 +173,74 @@ void make_force_veg(NumericMatrix &forcing_veg_data,
   for (iveg = 0; iveg <= Nveg; iveg++) {
     for (band = 0; band < Nbands; band++) {
       veg_var[iveg][band].albedo =
-        veg_con[iveg].albedo[dmy[rec].month - 1];
+          veg_con[iveg].albedo[dmy[rec].month - 1];
       veg_var[iveg][band].displacement =
-        veg_con[iveg].displacement[dmy[rec].month - 1];
+          veg_con[iveg].displacement[dmy[rec].month - 1];
       veg_var[iveg][band].fcanopy =
-        veg_con[iveg].fcanopy[dmy[rec].month - 1];
+          veg_con[iveg].fcanopy[dmy[rec].month - 1];
       veg_var[iveg][band].LAI =
-        veg_con[iveg].LAI[dmy[rec].month - 1];
+          veg_con[iveg].LAI[dmy[rec].month - 1];
       veg_var[iveg][band].roughness =
-        veg_con[iveg].roughness[dmy[rec].month - 1];
+          veg_con[iveg].roughness[dmy[rec].month - 1];
     }
   }
 
   Ntypes = veg_force_types.length();
   for (iveg = 0; iveg <= Nveg; iveg++) {
     for (band = 0; band < Nbands; band++) {
-      for(int i = 0; i < Ntypes; i++) {
+      for (int i = 0; i < Ntypes; i++) {
         tmp_veg_val = forcing_veg_data(rec, iveg + i * Nveg);
 
-        if(veg_force_types[i] == 0 && options.ALB_SRC == FROM_VEGHIST) {
+        if (veg_force_types[i] == 0 && options.ALB_SRC == FROM_VEGHIST) {
           veg_var[iveg][band].albedo = tmp_veg_val;
-        }
-        else if(veg_force_types[i] == 1 && options.LAI_SRC == FROM_VEGHIST) {
+        } else if (veg_force_types[i] == 1 && options.LAI_SRC == FROM_VEGHIST) {
           veg_var[iveg][band].LAI = tmp_veg_val;
-        }
-        else if(veg_force_types[i] == 2 && options.FCAN_SRC == FROM_VEGHIST) {
+        } else if (veg_force_types[i] == 2 && options.FCAN_SRC == FROM_VEGHIST) {
           veg_var[iveg][band].fcanopy = tmp_veg_val;
         }
       }
     }
   }
-
 }
 
-void alloc_force(force_data_struct &force)
-{
+void alloc_force(force_data_struct &force) {
   extern option_struct options;
   extern size_t NR;
 
-  force.air_temp = (double*)calloc(NR + 1, sizeof(force.air_temp));
+  force.air_temp = (double *)calloc(NR + 1, sizeof(force.air_temp));
   check_alloc_status(force.air_temp, "Memory allocation error.");
-  force.density = (double*)calloc(NR + 1, sizeof(force.density));
+  force.density = (double *)calloc(NR + 1, sizeof(force.density));
   check_alloc_status(force.density, "Memory allocation error.");
-  force.longwave = (double*)calloc(NR + 1, sizeof(force.longwave));
+  force.longwave = (double *)calloc(NR + 1, sizeof(force.longwave));
   check_alloc_status(force.longwave, "Memory allocation error.");
-  force.prec = (double*)calloc(NR + 1, sizeof(force.prec));
+  force.prec = (double *)calloc(NR + 1, sizeof(force.prec));
   check_alloc_status(force.prec, "Memory allocation error.");
-  force.pressure = (double*)calloc(NR + 1, sizeof(force.pressure));
+  force.pressure = (double *)calloc(NR + 1, sizeof(force.pressure));
   check_alloc_status(force.pressure, "Memory allocation error.");
-  force.shortwave = (double*)calloc(NR + 1, sizeof(force.shortwave));
+  force.shortwave = (double *)calloc(NR + 1, sizeof(force.shortwave));
   check_alloc_status(force.shortwave, "Memory allocation error.");
-  force.snowflag = (bool*)calloc(NR + 1, sizeof(force.snowflag));
+  force.snowflag = (bool *)calloc(NR + 1, sizeof(force.snowflag));
   check_alloc_status(force.snowflag, "Memory allocation error.");
-  force.vp = (double*)calloc(NR + 1, sizeof(force.vp));
+  force.vp = (double *)calloc(NR + 1, sizeof(force.vp));
   check_alloc_status(force.vp, "Memory allocation error.");
-  force.vpd = (double*)calloc(NR + 1, sizeof(force.vpd));
+  force.vpd = (double *)calloc(NR + 1, sizeof(force.vpd));
   check_alloc_status(force.vpd, "Memory allocation error.");
-  force.wind = (double*)calloc(NR + 1, sizeof(force.wind));
+  force.wind = (double *)calloc(NR + 1, sizeof(force.wind));
   check_alloc_status(force.wind, "Memory allocation error.");
   if (options.LAKES) {
     force.channel_in =
-      (double*)calloc(NR + 1, sizeof(force.channel_in));
+        (double *)calloc(NR + 1, sizeof(force.channel_in));
     check_alloc_status(force.channel_in,
                        "Memory allocation error.");
   }
   if (options.CARBON) {
-    force.Catm = (double*)calloc(NR + 1, sizeof(force.Catm));
+    force.Catm = (double *)calloc(NR + 1, sizeof(force.Catm));
     check_alloc_status(force.Catm, "Memory allocation error.");
-    force.coszen = (double*)calloc(NR + 1, sizeof(force.coszen));
+    force.coszen = (double *)calloc(NR + 1, sizeof(force.coszen));
     check_alloc_status(force.coszen, "Memory allocation error.");
-    force.fdir = (double*)calloc(NR + 1, sizeof(force.fdir));
+    force.fdir = (double *)calloc(NR + 1, sizeof(force.fdir));
     check_alloc_status(force.fdir, "Memory allocation error.");
-    force.par = (double*)calloc(NR + 1, sizeof(force.par));
+    force.par = (double *)calloc(NR + 1, sizeof(force.par));
     check_alloc_status(force.par, "Memory allocation error.");
   }
 }
@@ -278,4 +268,3 @@ void free_force(force_data_struct &force) {
     free(force.par);
   }
 }
-

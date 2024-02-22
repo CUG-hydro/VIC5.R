@@ -19,191 +19,191 @@ List vic_run_cells_all(List vic_options,
                        NumericVector snowband,
                        NumericVector lake_par,
                        NumericMatrix veglib,
-                       List output_info, 
+                       List output_info,
                        int ncores = 2) {
-    extern global_param_struct global_param;
-    extern option_struct options;
+  extern global_param_struct global_param;
+  extern option_struct options;
 
-    size_t Nveg_type;
-    size_t startrec;
-    size_t rec;
-    int ErrorFlag;
+  size_t Nveg_type;
+  size_t startrec;
+  size_t rec;
+  int ErrorFlag;
 
-    force_data_struct force;
-    veg_lib_struct *veg_lib;
-    veg_con_struct *veg_con;
-    all_vars_struct all_vars;
-    lake_con_struct lake_con;
-    soil_con_struct soil_con;
-    dmy_struct *dmy;
+  force_data_struct force;
+  veg_lib_struct *veg_lib;
+  veg_con_struct *veg_con;
+  all_vars_struct all_vars;
+  lake_con_struct lake_con;
+  soil_con_struct soil_con;
+  dmy_struct *dmy;
 
-    stream_struct *streams = NULL;
-    double ***out_data;
-    save_data_struct save_data;
+  stream_struct *streams = NULL;
+  double ***out_data;
+  save_data_struct save_data;
 
-    IntegerVector veg_force_types;
+  IntegerVector veg_force_types;
 
-    timer_struct global_timers[N_TIMERS];
-    timer_struct cell_timer;
+  timer_struct global_timers[N_TIMERS];
+  timer_struct cell_timer;
 
-    timer_start(&(global_timers[TIMER_VIC_ALL]));
-    timer_start(&(global_timers[TIMER_VIC_INIT]));
+  timer_start(&(global_timers[TIMER_VIC_ALL]));
+  timer_start(&(global_timers[TIMER_VIC_INIT]));
 
-    initialize_log();
+  initialize_log();
 
-    initialize_options();
-    initialize_global();
-    initialize_parameters();
+  initialize_options();
+  initialize_global();
+  initialize_parameters();
 
-    get_options(vic_options);
-    validate_parameters();
-    //setup_logging(MISSING, "MISSING", NULL);
+  get_options(vic_options);
+  validate_parameters();
+  // setup_logging(MISSING, "MISSING", NULL);
 
-    initialize_time();
-    dmy = make_dmy(&global_param);
+  initialize_time();
+  dmy = make_dmy(&global_param);
 
-    // Initiate output data
-    set_output_met_data_info();
-    out_data = (double ***)malloc(1 * sizeof(*out_data));
-    check_alloc_status(out_data, "Memory allocation error.");
-    alloc_out_data(1, out_data);
-    make_output_info(output_info, &streams, &(dmy[0]));
-    //validate_streams(&streams);
-    for (size_t sn = 0; sn < options.Noutstreams; sn++) {
-        int n = streams[sn].agg_alarm.n;
-        set_alarm(&(dmy[0]), streams[sn].agg_alarm.freq, &n,
-                  &(streams[sn].agg_alarm));
-    }
-    
-    veg_lib = make_veglib(veglib);
+  // Initiate output data
+  set_output_met_data_info();
+  out_data = (double ***)malloc(1 * sizeof(*out_data));
+  check_alloc_status(out_data, "Memory allocation error.");
+  alloc_out_data(1, out_data);
+  make_output_info(output_info, &streams, &(dmy[0]));
+  // validate_streams(&streams);
+  for (size_t sn = 0; sn < options.Noutstreams; sn++) {
+    int n = streams[sn].agg_alarm.n;
+    set_alarm(&(dmy[0]), streams[sn].agg_alarm.freq, &n,
+              &(streams[sn].agg_alarm));
+  }
 
-    alloc_force(force);
+  veg_lib = make_veglib(veglib);
 
-    Nveg_type = veglib.nrow();
+  alloc_force(force);
 
-    timer_stop(&(global_timers[TIMER_VIC_INIT]));
-    timer_start(&(global_timers[TIMER_VIC_RUN]));
+  Nveg_type = veglib.nrow();
 
-    /* **************************************************************************
+  timer_stop(&(global_timers[TIMER_VIC_INIT]));
+  timer_start(&(global_timers[TIMER_VIC_RUN]));
+
+  /* **************************************************************************
    * Run at one cell.
    * *************************************************************************/
-    
-    // add pixels loop at here
-    size_t ngrid = soil_par_mat.nrow();
-    List res(ngrid);
 
-//  #if defined(_OPENMP)
-//    #pragma omp parallel num_threads(ncores)
-//  #endif 
-    for (size_t i = 0; i < ngrid; i++) {
-        Rcout << i << std::endl;
+  // add pixels loop at here
+  size_t ngrid = soil_par_mat.nrow();
+  List res(ngrid);
 
-        List output_tables = make_output_tables(output_info);
-        IntegerVector write_row(options.Noutstreams, 0);
+  //  #if defined(_OPENMP)
+  //    #pragma omp parallel num_threads(ncores)
+  //  #endif
+  for (size_t i = 0; i < ngrid; i++) {
+    Rcout << i << std::endl;
 
-        NumericMatrix forcing = wrap(forcing_3d.slice(i));
-        NumericVector soil_par = soil_par_mat(i, _);
-        NumericMatrix veg_par = veg_par_list[i];
+    List output_tables = make_output_tables(output_info);
+    IntegerVector write_row(options.Noutstreams, 0);
 
-        // re-fill forcings
-        make_soilparam(soil_par, &soil_con, veg_lib);
-        make_snowband(snowband, &soil_con);
+    NumericMatrix forcing = wrap(forcing_3d.slice(i));
+    NumericVector soil_par = soil_par_mat(i, _);
+    NumericMatrix veg_par = veg_par_list[i];
 
-        // Rcout << "veg_par: " << veg_par << std::endl;
-        // Rcout << "forcing_veg: " << forcing_veg << std::endl;
+    // re-fill forcings
+    make_soilparam(soil_par, &soil_con, veg_lib);
+    make_snowband(snowband, &soil_con);
 
-        veg_con = make_vegparam(veg_par, veg_lib, soil_con.gridcel, Nveg_type);
-        calc_root_fractions(veg_con, &soil_con);
+    // Rcout << "veg_par: " << veg_par << std::endl;
+    // Rcout << "forcing_veg: " << forcing_veg << std::endl;
 
-        veg_force_types = get_veg_force_types(forcing_veg);
+    veg_con = make_vegparam(veg_par, veg_lib, soil_con.gridcel, Nveg_type);
+    calc_root_fractions(veg_con, &soil_con);
 
-        compute_treeline(forcing.column(1), dmy, &soil_con);
+    veg_force_types = get_veg_force_types(forcing_veg);
 
-        if (options.LAKES) {
-            lake_con = make_lakeparam(lake_par, soil_con, veg_con);
-        }
+    compute_treeline(forcing.column(1), dmy, &soil_con);
 
-        all_vars = make_all_vars(veg_con[0].vegetat_type_num);
-
-        popalute_param_state(&all_vars, &soil_con,
-                             veg_con, lake_con, &(dmy[0]));
-
-        initialize_save_data(&all_vars, &force, &soil_con, veg_con,
-                             veg_lib, &lake_con, out_data[0], &save_data,
-                             &cell_timer);
-
-        startrec = 0;
-
-        for (rec = startrec; rec < global_param.nrecs; rec++) {
-            make_force(force, forcing, &soil_con, rec, dmy);
-            make_force_veg(forcing, veg_force_types, &all_vars, veg_con, rec, dmy);
-
-            timer_start(&cell_timer);
-            ErrorFlag = vic_run(&force, &all_vars,
-                                &(dmy[rec]), &global_param, &lake_con,
-                                &soil_con, veg_con, veg_lib);
-            timer_stop(&cell_timer);
-
-            put_data(&all_vars, &force, &soil_con, veg_con, veg_lib,
-                     &lake_con, out_data[0], &save_data, &cell_timer);
-
-            for (size_t sn = 0; sn < options.Noutstreams; sn++) {
-                agg_stream_data(&(streams[sn]), &(dmy[rec]), out_data);
-            }
-            write_data(&streams, &dmy[rec], output_tables, write_row);
-
-            if (ErrorFlag == VIC_ERROR) {
-                if (options.CONTINUEONERROR) {
-                    log_warn(
-                        "ERROR: Grid cell %i failed in record %zu so the simulation "
-                        "has not finished. Please check your inputs before "
-                        "rerunning.",
-                        soil_con.gridcel, rec);
-                    break;
-                } else {
-                    log_err(
-                        "ERROR: Grid cell %i failed in record %zu so the simulation "
-                        " has ended. Check your inputs before rerunning.",
-                        soil_con.gridcel, rec);
-                }
-            }
-        }  // End Rec Loop
-        res[i] = output_tables;
+    if (options.LAKES) {
+      lake_con = make_lakeparam(lake_par, soil_con, veg_con);
     }
 
-    timer_stop(&(global_timers[TIMER_VIC_RUN]));
-    timer_start(&(global_timers[TIMER_VIC_FINAL]));
+    all_vars = make_all_vars(veg_con[0].vegetat_type_num);
 
-    free_all_vars(&all_vars, veg_con[0].vegetat_type_num);
-    free_vegcon(&veg_con);
-    free_soil_con(soil_con);
+    popalute_param_state(&all_vars, &soil_con,
+                         veg_con, lake_con, &(dmy[0]));
 
-    free_force(force);
-    free_dmy(&dmy);
-    free_streams(&streams);
-    free_out_data(1, out_data);
-    free_veglib(&veg_lib);
+    initialize_save_data(&all_vars, &force, &soil_con, veg_con,
+                         veg_lib, &lake_con, out_data[0], &save_data,
+                         &cell_timer);
 
-    finalize_logging();
-    log_info("Completed running VIC %s", VIC_DRIVER);
+    startrec = 0;
 
-    timer_stop(&(global_timers[TIMER_VIC_FINAL]));
-    timer_stop(&(global_timers[TIMER_VIC_ALL]));
+    for (rec = startrec; rec < global_param.nrecs; rec++) {
+      make_force(force, forcing, &soil_con, rec, dmy);
+      make_force_veg(forcing, veg_force_types, &all_vars, veg_con, rec, dmy);
 
-    // Output timing data
-    // output_tables.push_back(
-    //     NumericVector::create(global_timers[TIMER_VIC_INIT].delta_wall, global_timers[TIMER_VIC_INIT].delta_cpu),
-    //     "init_time");
-    // output_tables.push_back(
-    //     NumericVector::create(global_timers[TIMER_VIC_RUN].delta_wall, global_timers[TIMER_VIC_RUN].delta_cpu),
-    //     "run_time");
-    // output_tables.push_back(
-    //     NumericVector::create(global_timers[TIMER_VIC_FINAL].delta_wall, global_timers[TIMER_VIC_FINAL].delta_cpu),
-    //     "final_time");
-    // output_tables.push_back(
-    //     NumericVector::create(global_timers[TIMER_VIC_ALL].delta_wall, global_timers[TIMER_VIC_ALL].delta_cpu),
-    //     "all_time");
-    return res;
+      timer_start(&cell_timer);
+      ErrorFlag = vic_run(&force, &all_vars,
+                          &(dmy[rec]), &global_param, &lake_con,
+                          &soil_con, veg_con, veg_lib);
+      timer_stop(&cell_timer);
+
+      put_data(&all_vars, &force, &soil_con, veg_con, veg_lib,
+               &lake_con, out_data[0], &save_data, &cell_timer);
+
+      for (size_t sn = 0; sn < options.Noutstreams; sn++) {
+        agg_stream_data(&(streams[sn]), &(dmy[rec]), out_data);
+      }
+      write_data(&streams, &dmy[rec], output_tables, write_row);
+
+      if (ErrorFlag == VIC_ERROR) {
+        if (options.CONTINUEONERROR) {
+          log_warn(
+              "ERROR: Grid cell %i failed in record %zu so the simulation "
+              "has not finished. Please check your inputs before "
+              "rerunning.",
+              soil_con.gridcel, rec);
+          break;
+        } else {
+          log_err(
+              "ERROR: Grid cell %i failed in record %zu so the simulation "
+              " has ended. Check your inputs before rerunning.",
+              soil_con.gridcel, rec);
+        }
+      }
+    }  // End Rec Loop
+    res[i] = output_tables;
+  }
+
+  timer_stop(&(global_timers[TIMER_VIC_RUN]));
+  timer_start(&(global_timers[TIMER_VIC_FINAL]));
+
+  free_all_vars(&all_vars, veg_con[0].vegetat_type_num);
+  free_vegcon(&veg_con);
+  free_soil_con(soil_con);
+
+  free_force(force);
+  free_dmy(&dmy);
+  free_streams(&streams);
+  free_out_data(1, out_data);
+  free_veglib(&veg_lib);
+
+  finalize_logging();
+  log_info("Completed running VIC %s", VIC_DRIVER);
+
+  timer_stop(&(global_timers[TIMER_VIC_FINAL]));
+  timer_stop(&(global_timers[TIMER_VIC_ALL]));
+
+  // Output timing data
+  // output_tables.push_back(
+  //     NumericVector::create(global_timers[TIMER_VIC_INIT].delta_wall, global_timers[TIMER_VIC_INIT].delta_cpu),
+  //     "init_time");
+  // output_tables.push_back(
+  //     NumericVector::create(global_timers[TIMER_VIC_RUN].delta_wall, global_timers[TIMER_VIC_RUN].delta_cpu),
+  //     "run_time");
+  // output_tables.push_back(
+  //     NumericVector::create(global_timers[TIMER_VIC_FINAL].delta_wall, global_timers[TIMER_VIC_FINAL].delta_cpu),
+  //     "final_time");
+  // output_tables.push_back(
+  //     NumericVector::create(global_timers[TIMER_VIC_ALL].delta_wall, global_timers[TIMER_VIC_ALL].delta_cpu),
+  //     "all_time");
+  return res;
 }
 
 /***R

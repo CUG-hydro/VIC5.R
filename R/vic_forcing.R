@@ -153,14 +153,14 @@ check_forcing <- function(forcing, soil = NULL) {
   ngrid = ncol(forcing[[1]])
   # Estimate forcing data that not supplied.
   if ("PRESS" %in% forc_lack) {
-    forcing$PRESS = foreach(i = 1:ngrid, icount(), .c = cbind) %do% {
-      cal_Pa(frocing$TEMP[, i], elev = soil[, "ELEV"])
+    forcing$PRESS = foreach(i = 1:ngrid, .c = cbind) %do% {
+      cal_Pa(forcing$TEMP[, i], elev = soil[, "ELEV"])
     }
   }
 
   if ("LW" %in% forc_lack) {
     J <- get_J()
-    forcing$LW = foreach(i = 1:ngrid, icount(), .c = cbind) %do% {
+    forcing$LW = foreach(i = 1:ngrid, .c = cbind) %do% {
       lat = soil[i, "LAT"]
       cal_lw(forcing$TEMP[, i], forcing$VP[, i], forcing$SW[, i], lat, J)
     }

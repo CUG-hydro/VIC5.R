@@ -12,3 +12,4 @@ void vic_version() {
   print_license();
 }
 
+void display_current_settings(int mode) {}

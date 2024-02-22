@@ -4,6 +4,7 @@
 #' @docType package
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats setNames convolve median
+#' @importFrom foreach %do% foreach
 #' @importFrom utils str read.table
 #' @keywords internal
 "_PACKAGE"
@@ -13,3 +14,11 @@
 ## usethis namespace: start
 ## usethis namespace: end
 NULL
+
+.onLoad <- function (libname, pkgname){
+  if(getRversion() >= "2.15.1") {
+    utils::globalVariables(
+      c(".", "i")
+    )
+  }
+}

@@ -36,42 +36,41 @@
  *****************************************************************************/
 double
 canopy_evap(layer_data_struct *layer,
-            veg_var_struct    *veg_var,
-            bool               CALC_EVAP,
-            unsigned short     veg_class,
-            double            *Wdew,
-            double             delta_t,
-            double             rad,
-            double             vpd,
-            double             net_short,
-            double             air_temp,
-            double             ra,
-            double             elevation,
-            double             ppt,
-            double            *Wmax,
-            double            *Wcr,
-            double            *Wpwp,
-            double            *frost_fract,
-            double            *root,
-            double            *dryFrac,
-            double             shortwave,
-            double             Catm,
-            double            *CanopLayerBnd)
-{
+            veg_var_struct *veg_var,
+            bool CALC_EVAP,
+            unsigned short veg_class,
+            double *Wdew,
+            double delta_t,
+            double rad,
+            double vpd,
+            double net_short,
+            double air_temp,
+            double ra,
+            double elevation,
+            double ppt,
+            double *Wmax,
+            double *Wcr,
+            double *Wpwp,
+            double *frost_fract,
+            double *root,
+            double *dryFrac,
+            double shortwave,
+            double Catm,
+            double *CanopLayerBnd) {
     /** declare global variables **/
     extern veg_lib_struct *vic_run_veg_lib;
-    extern option_struct   options;
+    extern option_struct options;
 
     /** declare local variables **/
-    size_t                 i;
-    double                 f;   /* fraction of time step used to fill canopy */
-    double                 throughfall;
-    double                 Evap;
-    double                 tmp_Evap;
-    double                 canopyevap;
-    double                 tmp_Wdew;
-    double                 layertransp[MAX_LAYERS];
-    double                 rc;
+    size_t i;
+    double f; /* fraction of time step used to fill canopy */
+    double throughfall;
+    double Evap;
+    double tmp_Evap;
+    double canopyevap;
+    double tmp_Wdew;
+    double layertransp[MAX_LAYERS];
+    double rc;
 
     Evap = 0;
 
@@ -93,27 +92,24 @@ canopy_evap(layer_data_struct *layer,
         tmp_Wdew = veg_var->Wdmax;
     }
 
-    rc = calc_rc((double) 0.0, net_short, vic_run_veg_lib[veg_class].RGL,
-                 air_temp, vpd, veg_var->LAI, (double) 1.0, false);
+    rc = calc_rc((double)0.0, net_short, vic_run_veg_lib[veg_class].RGL,
+                 air_temp, vpd, veg_var->LAI, (double)1.0, false);
     if (veg_var->LAI > 0) {
         canopyevap = pow((tmp_Wdew / veg_var->Wdmax), (2.0 / 3.0)) *
                      penman(air_temp, elevation, rad, vpd, ra, rc,
                             vic_run_veg_lib[veg_class].rarc) *
                      delta_t / CONST_CDAY;
-    }
-    else {
+    } else {
         canopyevap = 0;
     }
 
     if (canopyevap > 0.0 && delta_t == CONST_CDAY) {
         /** If daily time step, evap can include current precipitation **/
         f = min(1.0, ((tmp_Wdew + ppt) / canopyevap));
-    }
-    else if (canopyevap > 0.0) {
+    } else if (canopyevap > 0.0) {
         /** If sub-daily time step, evap can not exceed current storage **/
         f = min(1.0, ((tmp_Wdew) / canopyevap));
-    }
-    else {
+    } else {
         f = 1.0;
     }
     canopyevap *= f;
@@ -121,8 +117,7 @@ canopy_evap(layer_data_struct *layer,
     /* compute fraction of canopy that is dry */
     if (veg_var->Wdmax > 0) {
         *dryFrac = 1.0 - f * pow((tmp_Wdew / veg_var->Wdmax), (2.0 / 3.0));
-    }
-    else {
+    } else {
         *dryFrac = 0;
     }
 
@@ -132,8 +127,7 @@ canopy_evap(layer_data_struct *layer,
     }
     if (tmp_Wdew <= veg_var->Wdmax) {
         throughfall += 0.0;
-    }
-    else {
+    } else {
         throughfall += tmp_Wdew - veg_var->Wdmax;
         tmp_Wdew = veg_var->Wdmax;
     }
@@ -165,45 +159,43 @@ canopy_evap(layer_data_struct *layer,
 /******************************************************************************
  * @brief    Calculate the transpiration from the canopy.
  *****************************************************************************/
-void
-transpiration(layer_data_struct *layer,
-              veg_var_struct    *veg_var,
-              unsigned short     veg_class,
-              double             rad,
-              double             vpd,
-              double             net_short,
-              double             air_temp,
-              double             ra,
-              double             dryFrac,
-              double             delta_t,
-              double             elevation,
-              double            *Wmax,
-              double            *Wcr,
-              double            *Wpwp,
-              double            *layertransp,
-              double            *frost_fract,
-              double            *root,
-              double             shortwave,
-              double             Catm,
-              double            *CanopLayerBnd)
-{
-    extern veg_lib_struct   *vic_run_veg_lib;
-    extern option_struct     options;
+void transpiration(layer_data_struct *layer,
+                   veg_var_struct *veg_var,
+                   unsigned short veg_class,
+                   double rad,
+                   double vpd,
+                   double net_short,
+                   double air_temp,
+                   double ra,
+                   double dryFrac,
+                   double delta_t,
+                   double elevation,
+                   double *Wmax,
+                   double *Wcr,
+                   double *Wpwp,
+                   double *layertransp,
+                   double *frost_fract,
+                   double *root,
+                   double shortwave,
+                   double Catm,
+                   double *CanopLayerBnd) {
+    extern veg_lib_struct *vic_run_veg_lib;
+    extern option_struct options;
     extern parameters_struct param;
 
-    size_t                   i;
-    size_t                   frost_area;
-    double                   gsm_inv;   /* soil moisture stress factor */
-    double                   moist1, moist2; /* tmp holding of moisture */
-    double                   transp;    /* tmp holding for transp total */
-    double                   Wcr1;      /* tmp holding of critical water for upper layers */
-    double                   root_sum;  /* proportion of roots in moist>Wcr zones */
-    double                   spare_transp; /* transp for 2nd distribution */
-    double                   avail_moist[MAX_LAYERS]; /* moisture available for trans */
-    double                   ice[MAX_LAYERS];
-    double                   gc;
-    double                  *gsLayer = NULL;
-    size_t                   cidx;
+    size_t i;
+    size_t frost_area;
+    double gsm_inv;                 /* soil moisture stress factor */
+    double moist1, moist2;          /* tmp holding of moisture */
+    double transp;                  /* tmp holding for transp total */
+    double Wcr1;                    /* tmp holding of critical water for upper layers */
+    double root_sum;                /* proportion of roots in moist>Wcr zones */
+    double spare_transp;            /* transp for 2nd distribution */
+    double avail_moist[MAX_LAYERS]; /* moisture available for trans */
+    double ice[MAX_LAYERS];
+    double gc;
+    double *gsLayer = NULL;
+    size_t cidx;
 
     /**********************************************************************
        EVAPOTRANSPIRATION
@@ -238,12 +230,12 @@ transpiration(layer_data_struct *layer,
             for (frost_area = 0; frost_area < options.Nfrost; frost_area++) {
                 avail_moist[i] +=
                     ((layer[i].moist -
-                      layer[i].ice[frost_area]) * frost_fract[frost_area]);
+                      layer[i].ice[frost_area]) *
+                     frost_fract[frost_area]);
             }
             moist1 += avail_moist[i];
             Wcr1 += Wcr[i];
-        }
-        else {
+        } else {
             avail_moist[i] = 0.;
         }
     }
@@ -256,7 +248,8 @@ transpiration(layer_data_struct *layer,
     for (frost_area = 0; frost_area < options.Nfrost; frost_area++) {
         moist2 +=
             ((layer[i].moist -
-              layer[i].ice[frost_area]) * frost_fract[frost_area]);
+              layer[i].ice[frost_area]) *
+             frost_fract[frost_area]);
     }
     avail_moist[i] = moist2;
 
@@ -264,13 +257,8 @@ transpiration(layer_data_struct *layer,
     if (layer[0].moist > vic_run_veg_lib[veg_class].Wnpp_inhib * Wmax[0]) {
         veg_var->NPPfactor = vic_run_veg_lib[veg_class].NPPfactor_sat +
                              (1 - vic_run_veg_lib[veg_class].NPPfactor_sat) *
-                             (Wmax[0] - layer[0].moist) / (Wmax[0] -
-                                                           vic_run_veg_lib[
-                                                               veg_class].
-                                                           Wnpp_inhib *
-                                                           Wmax[0]);
-    }
-    else {
+                                 (Wmax[0] - layer[0].moist) / (Wmax[0] - vic_run_veg_lib[veg_class].Wnpp_inhib * Wmax[0]);
+    } else {
         veg_var->NPPfactor = 1.0;
     }
 
@@ -288,7 +276,7 @@ transpiration(layer_data_struct *layer,
         ((moist1 >= Wcr1 && moist2 >= Wcr[options.Nlayer - 1] && Wcr1 > 0.) ||
          (moist1 >= Wcr1 && (1 - root[options.Nlayer - 1]) >= 0.5) ||
          (moist2 >= Wcr[options.Nlayer - 1] && root[options.Nlayer - 1] >=
-          0.5))) {
+                                                   0.5))) {
         gsm_inv = 1.0;
 
         /* compute whole-canopy stomatal resistance */
@@ -301,8 +289,7 @@ transpiration(layer_data_struct *layer,
                 for (cidx = 0; cidx < options.Ncanopy; cidx++) {
                     if (veg_var->LAI > 0) {
                         veg_var->rsLayer[cidx] = veg_var->rc / veg_var->LAI;
-                    }
-                    else {
+                    } else {
                         veg_var->rsLayer[cidx] = param.HUGE_RESIST;
                     }
                     if (veg_var->rsLayer[cidx] > param.CANOPY_RSMAX) {
@@ -310,8 +297,7 @@ transpiration(layer_data_struct *layer,
                     }
                 }
             }
-        }
-        else {
+        } else {
             /* Compute rc based on photosynthetic demand from Knorr 1997 */
             calc_rc_ps(vic_run_veg_lib[veg_class].Ctype,
                        vic_run_veg_lib[veg_class].MaxCarboxRate,
@@ -334,20 +320,18 @@ transpiration(layer_data_struct *layer,
         spare_transp = 0.0;
         for (i = 0; i < options.Nlayer; i++) {
             if (avail_moist[i] >= Wcr[i]) {
-                layertransp[i] = transp * (double) root[i];
-            }
-            else {
+                layertransp[i] = transp * (double)root[i];
+            } else {
                 if (avail_moist[i] >= Wpwp[i]) {
                     gsm_inv = (avail_moist[i] - Wpwp[i]) /
                               (Wcr[i] - Wpwp[i]);
-                }
-                else {
+                } else {
                     gsm_inv = 0.0;
                 }
 
-                layertransp[i] = transp * gsm_inv * (double) root[i];
+                layertransp[i] = transp * gsm_inv * (double)root[i];
                 root_sum -= root[i];
-                spare_transp = transp * (double) root[i] * (1.0 - gsm_inv);
+                spare_transp = transp * (double)root[i] * (1.0 - gsm_inv);
             }
         }
 
@@ -355,7 +339,7 @@ transpiration(layer_data_struct *layer,
         if (spare_transp > 0.0) {
             for (i = 0; i < options.Nlayer; i++) {
                 if (avail_moist[i] >= Wcr[i]) {
-                    layertransp[i] += (double) root[i] *
+                    layertransp[i] += (double)root[i] *
                                       spare_transp / root_sum;
                 }
             }
@@ -383,11 +367,9 @@ transpiration(layer_data_struct *layer,
             /** Set transpiration restriction factor **/
             if (avail_moist[i] >= Wcr[i]) {
                 gsm_inv = 1.0;
-            }
-            else if (avail_moist[i] >= Wpwp[i] && avail_moist[i] < Wcr[i]) {
+            } else if (avail_moist[i] >= Wpwp[i] && avail_moist[i] < Wcr[i]) {
                 gsm_inv = (avail_moist[i] - Wpwp[i]) / (Wcr[i] - Wpwp[i]);
-            }
-            else {
+            } else {
                 gsm_inv = 0.0;
             }
 
@@ -405,8 +387,7 @@ transpiration(layer_data_struct *layer,
                             if (veg_var->LAI > 0) {
                                 veg_var->rsLayer[cidx] = veg_var->rc /
                                                          veg_var->LAI;
-                            }
-                            else {
+                            } else {
                                 veg_var->rsLayer[cidx] = param.HUGE_RESIST;
                             }
                             if (veg_var->rsLayer[cidx] > param.CANOPY_RSMAX) {
@@ -414,8 +395,7 @@ transpiration(layer_data_struct *layer,
                             }
                         }
                     }
-                }
-                else {
+                } else {
                     /* Compute rc based on photosynthetic demand from Knorr 1997 */
                     calc_rc_ps(vic_run_veg_lib[veg_class].Ctype,
                                vic_run_veg_lib[veg_class].MaxCarboxRate,
@@ -432,12 +412,11 @@ transpiration(layer_data_struct *layer,
                                         veg_var->rc,
                                         vic_run_veg_lib[veg_class].rarc) *
                                  delta_t / CONST_CDAY * dryFrac *
-                                 (double) root[i];
+                                 (double)root[i];
 
                 if (veg_var->rc > 0) {
                     gc += 1 / (veg_var->rc);
-                }
-                else {
+                } else {
                     gc += param.HUGE_RESIST;
                 }
 
@@ -445,14 +424,12 @@ transpiration(layer_data_struct *layer,
                     for (cidx = 0; cidx < options.Ncanopy; cidx++) {
                         if (veg_var->rsLayer[cidx] > 0) {
                             gsLayer[cidx] += 1 / (veg_var->rsLayer[cidx]);
-                        }
-                        else {
+                        } else {
                             gsLayer[cidx] += param.HUGE_RESIST;
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 layertransp[i] = 0.0;
                 gc += 0;
                 if (options.CARBON) {
@@ -461,13 +438,12 @@ transpiration(layer_data_struct *layer,
                     }
                 }
             }
-        } // end loop over layers
+        }  // end loop over layers
 
         /* Now, take the inverse of the conductance */
         if (gc > 0) {
             veg_var->rc = 1 / gc;
-        }
-        else {
+        } else {
             veg_var->rc = param.HUGE_RESIST;
         }
         if (veg_var->rc > param.CANOPY_RSMAX) {
@@ -478,8 +454,7 @@ transpiration(layer_data_struct *layer,
             for (cidx = 0; cidx < options.Ncanopy; cidx++) {
                 if (gsLayer[cidx] > 0) {
                     veg_var->rsLayer[cidx] = 1 / gsLayer[cidx];
-                }
-                else {
+                } else {
                     veg_var->rsLayer[cidx] = param.HUGE_RESIST;
                 }
                 if (veg_var->rsLayer[cidx] > param.CANOPY_RSMAX) {
@@ -489,7 +464,7 @@ transpiration(layer_data_struct *layer,
         }
 
         if (options.CARBON) {
-            free((char *) gsLayer);
+            free((char *)gsLayer);
         }
     }
 
@@ -504,15 +479,13 @@ transpiration(layer_data_struct *layer,
                 if (layertransp[i] > avail_moist[i]) {
                     layertransp[i] = avail_moist[i];
                 }
-            }
-            else {
+            } else {
                 // ice content less than wilting point restrict loss of unfrozen moist
                 if (layertransp[i] > layer[i].moist - Wpwp[i]) {
                     layertransp[i] = layer[i].moist - Wpwp[i];
                 }
             }
-        }
-        else {
+        } else {
             // No ice restrict loss of unfrozen moist
             if (layertransp[i] > layer[i].moist - Wpwp[i]) {
                 layertransp[i] = layer[i].moist - Wpwp[i];

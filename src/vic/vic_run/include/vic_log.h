@@ -66,8 +66,8 @@ void setup_logging(int id, char log_path[], FILE **logfile);
 
 // Print and error functions of R
 void Rprintf(const char *, ...);
-void Rf_error(const char *, ...);
-void Rf_warning(const char *, ...);
+void rcpp_error(const char *, ...);
+void rcpp_warning(const char *, ...);
 
 // Debug Level
 #if LOG_LVL < 10
@@ -87,14 +87,14 @@ void Rf_warning(const char *, ...);
 
 // Warn Level
 #if LOG_LVL < 30
-#define log_warn Rf_warning
+#define log_warn rcpp_warning
 
 #else
 #define log_warn(M, ...)
 #endif
 
-#define log_err Rf_error
+#define log_err rcpp_error
 
-#define check_alloc_status(A, M) if (A == NULL) {Rf_error(M "%s\n", "");}
+#define check_alloc_status(A, M) if (A == NULL) {rcpp_error(M "%s\n", "");}
 
 #endif

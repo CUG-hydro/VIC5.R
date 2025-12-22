@@ -3,7 +3,6 @@
 
 #include <Rcpp.h>
 using namespace Rcpp;
-#undef ERROR /*replace C error with Rcpp*/
 
 extern "C" {
 #include <vic_driver_shared_all.h>

@@ -1,5 +1,22 @@
 #include <vic_R.h>
 
+void rcpp_error(const char* format, ...) {
+  char buf[256];
+  va_list ap;
+  va_start(ap, format);
+  vsnprintf(buf, (size_t) 256, format, ap);
+  va_end(ap);
+  Rcpp::stop("%s", buf);
+}
+void rcpp_warning(const char* format, ...) {
+  char buf[256];
+  va_list ap;
+  va_start(ap, format);
+  vsnprintf(buf, (size_t) 256, format, ap);
+  va_end(ap);
+  Rcpp::warning("%s", buf);
+}
+
 // [[Rcpp::export]]
 List vic_run_cell(List vic_options, NumericMatrix forcing,
                   NumericVector soil_par,
